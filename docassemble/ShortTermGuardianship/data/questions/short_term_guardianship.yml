@@ -1,0 +1,891 @@
+metadata:
+  title: Short term guardian appointment
+  short title: Short term guardianship
+  comment:  This program helps you prepare forms to appoint a short term guardian to be responsible your child for up to 1 year.
+  authors:
+    - Vivian McNaughton
+    - Matt Newsted
+---
+include:
+  - docassemble.AssemblyLine:assembly_line.yml
+  - docassemble.ALToolbox:phone-number-validation.yml
+  - docassemble.ILAO:ilao-interview-framework.yml
+  - docassemble.ILAO:shared-basic-questions.yml
+---
+objects:
+  - users: ALPeopleList.using(object_type=ALIndividual, there_are_any=True)
+  - other_parent: ALIndividual
+  - child: ALIndividual
+  - guardian: ALIndividual
+  - witnesses: ALPeopleList.using(there_are_any=True)
+  - court_list: ALCourtLoader.using(file_name='docassemble.ILAO:data/sources/il_courts.xlsx')
+---
+sections:
+  - review_answers: Review your answers
+---
+sections:
+  - section_intro: Start
+  - section_parents: Parents or current guardian
+  - section_child: Child
+  - section_guardianship: Guardianship
+  - section_witnesses: Witnesses
+  - section_download: Download
+---
+code: |
+  ilao_easy_form_title = "Short term guardian appointment"
+  ilao_easy_form_url = "https://www.illinoislegalaid.org/legal-information/short-term-guardian-appointment"
+  form_name = "Short term guardian appointment"
+  github_user = 'IllinoisLegalAidOnline'
+  github_repo_name = 'docassemble-ShortTermGuardianship'
+---
+# interview order block
+mandatory: True
+code: |
+  nav.set_section('section_intro')
+  sees_nav_bar
+  set_progress(5)
+  how_to_use
+  accept_terms
+  
+  nav.set_section('section_parents')
+  if parent_or_guardian == "parent":
+    if other_parent.consent == True:
+     other_parent.name.first
+     other_parent.address.address
+    else:
+     if why_is_consent_unneeded == "None of the above":
+       no_consent_kickout
+  users[0].name.first
+  users[0].address.address
+  
+  nav.set_section('section_child')
+  if born_yet == True:
+    child.name.first
+  child.birth_date
+  if born_yet == True:
+    if time_difference_check. years > 18:
+      adult_child_kickout
+  child.county
+  
+  nav.set_section('section_guardianship')
+  guardian.name.first
+  guardian.address.address
+  start_date
+  end_date
+    
+  nav.set_section('section_witnesses')
+  if first_witness_known == True:
+    witnesses[0].name.first  
+    witnesses[0].address.address
+    if second_witness_known == True:
+      witnesses[1].name.first
+      witnesses[1].address.address
+      
+  nav.set_section('section_download')
+  misc_end_option_text
+  include_other_parent_info
+  get_docs_screen
+  
+---
+id: welcome
+question: |
+  Short term guardian appointment
+subquestion: |
+  Welcome to Illinois Legal Aid Online's **Short term guardian appointment** Easy Form.
+
+  This program helps you prepare forms to appoint a short term guardian to be responsible your child for up to 1 year.
+  
+  The form you create can only be used in Illinois.
+field: sees_nav_bar
+---
+id: instructions
+continue button field: how_to_use
+question: |
+  Instructions
+subquestion: |
+  Set aside 10 to 15 minutes to finish this program. You can log in and save your work to return to later. 
+  
+  To complete this program, you will need to know: 
+  
+  * The names and addresses of two people who will witness you sign the guardianship form, and
+  * The name and address of the person being appointed as the short term guardian.
+
+  After you download your form, you will need to sign and date it in front of 2 witnesses. If another parent or guardian also has custody, they may need to sign the form as well.
+ 
+  ${ collapse_template(help_example) }  
+
+  Click on **{green words}** to learn what they mean. Some questions have a question mark in a circle ${ fa_icon("question-circle", color_css="#0DCAF0" ) } that also gives help.
+---
+template: help_example
+
+subject: |
+
+  **You can expand sections like this to show more information.**
+
+content: |  
+
+  This is an example of help. Click again to hide.
+---
+id: parent or guardian
+question: |
+  Are you the child's parent, or their guardian?
+field: parent_or_guardian
+choices:
+  - Parent: parent
+  - Guardian: guardian
+---
+depends on:
+  - parent_or_guardian
+  - other_parent.consent
+code: |
+  if parent_or_guardian == "parent":
+    if other_parent.consent == True:
+      include_other_parent_info = True
+    else:
+      include_other_parent_info = False
+  else:
+    include_other_parent_info = False
+---
+#Is this or a similar question necessary if the users[0] is a guardian and not a parent? Perhaps we should ask if there are additional guardians and then ask about their consent? Are there other ways this program should function differently depending on whether the users[0] is a parent or guardian?
+id: other parent consent
+question: |
+  Is the child's other parent consenting to this short-term guardianship?
+subquestion: |
+  If the other parent has passed away or is unavailable for another reason, select **No**.
+fields:
+  - no label: other_parent.consent
+    datatype: yesnoradio
+---
+id: other parent name
+question: |
+  What is the other parent's name?
+fields:
+  - First: other_parent.name.first
+  - Middle: other_parent.name.middle
+    required: False
+  - Last: other_parent.name.last
+  - Suffix: other_parent.name.suffix
+    code: |
+      name_suffix()
+    required: False 
+---
+id: other parent address
+question: |
+  What is ${other_parent.name.full(middle='full')}'s address?
+fields:
+  - Street address: other_parent.address.address
+    address autocomplete: True
+  - Address line 2: other_parent.address.unit
+    required: False
+  - City: other_parent.address.city
+  - State: other_parent.address.state
+    code: |
+      states_list() 
+  - ZIP code: other_parent.address.zip
+  - County: other_parent.address.county
+---
+#Do we need to add an option about child custody?
+id: why is consent unneeded
+question: |
+  Why is the child's other parent unable to provide consent?
+field: why_is_consent_unneeded 
+choices:
+  - The other parent has died.
+  - "The other parent's whereabouts are not known."
+  - The other parent is not willing or able to make and carry out day-to-day child care decisions concerning the child
+  - "The child's parents were never married and no court has issued an order establishing parentage."
+  - None of the above
+---
+id: no consent kickout
+event: no_consent_kickout
+question: |
+  Sorry
+subquestion: |
+  If the child's other parent has custody rights over the child, you need their consent in order to use this program.
+  
+  Click **Back** if you made a mistake. Or you can talk with a lawyer to discuss your options. Use **[Get Legal Help](https://www.illinoislegalaid.org/get-legal-help)** to find free or low-cost legal services in your area.
+buttons:
+  - Exit: exit
+  - Restart: restart
+---
+id: user name
+question:  |
+  What is your name?
+fields:
+  - First name: users[0].name.first
+  - Middle name: users[0].name.middle
+    required: False
+  - Last name: users[0].name.last
+  - Suffix: users[0].name.suffix
+    code: |
+      name_suffix()
+    required: False  
+---
+id: user address
+question: |
+  What is your address?
+fields:
+  - Street address: users[0].address.address
+    address autocomplete: True
+  - Address line 2: users[0].address.unit
+    required: False
+  - City: users[0].address.city
+  - State: users[0].address.state
+    code: |
+      states_list() 
+  - ZIP code: users[0].address.zip
+---
+id: born yet
+question: |
+  Has the child been born yet?
+fields:
+  - no label: born_yet
+    datatype: yesnoradio
+---
+id: child name
+question: |
+  What is the child's name?
+fields:
+  - First name: child.name.first
+  - Middle name: child.name.middle
+    required: False
+  - Last name: child.name.last
+  - Suffix: child.name.suffix
+    code: |
+      name_suffix()
+    required: False  
+---
+id: child birthdate
+question: |
+  % if born_yet == True:
+  When was ${child.name.full(middle='full')} born?
+  % else:
+  What is the expected date of birth?
+  % endif
+fields:
+  - Birth date: child.birth_date
+    datatype: ThreePartsDate
+    alMin: |
+      % if born_yet == False:
+      ${today()}
+      % endif
+    alMax: |
+      % if born_yet == True:
+      ${today()}
+      % endif
+---
+depends on:
+  - child.birth_date
+code: |
+  time_difference_check = date_difference(starting=child.birth_date, ending=today())
+---
+id: adult child kickout
+event: adult_child_kickout
+question: |
+  Sorry
+subquestion: |
+  This program can not help you appoint a short term guardian for someone over 18 years of age.
+  
+  Click **Back** if you made a mistake. Or you can talk with a lawyer to discuss your options. Use **[Get Legal Help](https://www.illinoislegalaid.org/get-legal-help)** to find free or low-cost legal services in your area.
+buttons:
+  - Exit: exit
+  - Restart: restart
+---
+#In the HotDocs version this question is asked regardless of whether the baby is born yet. Is that appropriate?
+id: filing county
+question: |
+  % if born_yet == True:  
+  Which county does ${child.name.full(middle='full')} live in?
+  % else:
+  Which county will the child live in?
+  % endif
+fields:
+  - no label: child.trial_court_index
+    code: |
+      ilao_court_county_lookup(court_list)
+validation code: |
+  if child.trial_court_index == "-1":
+    trial_court = court_list.as_court('trial_court', 15)
+  else:
+    trial_court = court_list.as_court('trial_court', child.trial_court_index)
+---
+code: |
+  child.trial_court_index
+  child.county = trial_court.address.county
+---
+id: guardian name
+question: |
+  What is the name of the guardian you are appointing for your child?
+fields:
+  - First name: guardian.name.first
+  - Middle name: guardian.name.middle
+    required: False
+  - Last name: guardian.name.last
+  - Suffix: guardian.name.suffix
+    code: |
+      name_suffix()
+    required: False  
+---
+id: guardian address
+question: |
+  What is ${guardian.name.full(middle='full')}'s address?
+fields:
+  - Street address: guardian.address.address
+    address autocomplete: True
+  - Address line 2: guardian.address.unit
+    required: False
+  - City: guardian.address.city
+  - State: guardian.address.state
+    code: |
+      states_list() 
+  - ZIP code: guardian.address.zip
+---
+id: start date
+question: |
+  When will the short-term guardianship start?
+fields: 
+  - Start date: start_date
+    input type: radio 
+    choices:
+      - On the date that I state in writing that I am no longer either willing or able to make and carry out day-to-day child care decisions concerning the child.: writing
+      - On the date that a physician familiar with my condition certifies in writing that I am no longer willing or able to make and carry out day-to-day child care decisions concerning the child.: physician
+      - On the date that I am admitted as an in-patient to a hospital or other health care institution.: patient
+      - On a date that I will choose.: choose
+      - On the date the form is signed and dated.: signed
+      - On the date my active duty service begins.: active duty
+      - On the date of an administrative separation. : administrative
+        help: |
+          Administrative separation«.be» means a parent's, legal guardian's, legal custodian's, or primary caretaker's:
+          
+          * arrest, detention, incarceration, removal, or deportation in connection with federal immigration enforcement, or
+          * receipt of official communication by federal, State, or local authorities regarding immigration enforcement that gives reasonable notice that care and supervision of the child by the parent, legal guardian, legal custodian, or primary caretaker will be interrupted or cannot be provided.
+      - On the date when an event happens. I will describe the event.: event
+  - Date: specific_start_date
+    datatype: date
+    show if: 
+      variable: start_date
+      is: "choose"
+  - Date service begins: specific_start_date
+    datatype: date
+    show if:
+      variable: start_date
+      is: "active duty"
+  - Event: start_date_event
+    input type: area
+    show if:
+      variable: start_date
+      is: "event"
+---
+#Should this question be restricted or perhaps entirely based on the answer to start_date? The HotDocs version placed no such restriction, but all these options seem to only make sense if the corresponding start date option is selected.
+id: end date
+question: |
+  When will the short-term guardianship end?
+fields: 
+  - Start date: end_date
+    input type: radio 
+    choices:
+      - On the date that I state in writing that I am willing and able to make and carry out day-to-day child care decisions concerning the child.: writing
+      - On the date that a physician familiar with my condition certifies in writing that I am willing and able to make and carry out day-to-day child care decisions concerning the child.: physician
+      - On the date that I am discharged from the hospital or other health care institution where I was admitted as an in-patient, which established the effective date.: patient
+      - On a date which is a set number of days after the effective date. I will choose the number of days below.: choose
+      - On a date no more than 30 days after my active duty service is scheduled to end.: active duty
+      - On the date the administrative separation is scheduled to end. : administrative
+        help: |
+          Administrative separation«.be» means a parent's, legal guardian's, legal custodian's, or primary caretaker's:
+          
+          * arrest, detention, incarceration, removal, or deportation in connection with federal immigration enforcement, or
+          * receipt of official communication by federal, State, or local authorities regarding immigration enforcement that gives reasonable notice that care and supervision of the child by the parent, legal guardian, legal custodian, or primary caretaker will be interrupted or cannot be provided.
+      - On the date when another event happens or when certain conditions are met. I will describe below.: event
+  - Number of days: length_in_days
+    datatype: integer
+    max: 366
+    min: 0
+    show if: 
+      variable: end_date
+      is: "choose"
+  - Date service ends: specific_end_date
+    datatype: date
+    show if:
+      variable: end_date
+      is: "active duty"
+  - Event: end_date_event
+    input type: area
+    show if:
+      variable: end_date
+      is: "event"
+---
+id: first witness known
+question: |
+  Do you know who will be your first witness?
+subquestion: |
+  You will need to have two witnesses sign the form with you.
+fields:
+  - no label: first_witness_known
+    datatype: yesnoradio
+---
+id: second witness known
+question: |
+  Do you know who will be your second witness?
+subquestion: |
+  You will need to have two witnesses sign the form with you.
+fields:
+  - no label: second_witness_known
+    datatype: yesnoradio
+---
+id: witness name
+question: |
+  What is the name of your ${ ordinal(i) } witness?
+fields:
+  - First: witnesses[i].name.first
+  - Middle: witnesses[i].name.middle
+    required: False
+  - Last: witnesses[i].name.last  
+---
+id: witness address
+question: |
+  What is ${witnesses[i].name.full(middle="full") }'s address?
+subquestion: |
+  If you do not know this now, you can leave this blank. You will need to add this information when ${witnesses[i].name.full(middle='full')} signs the form.
+fields:
+  - Street address: witnesses[i].address.address
+    address autocomplete: True
+    required: False
+  - Address line 2: witnesses[i].address.unit
+    required: False
+  - City: witnesses[i].address.city
+    required: False
+  - State: witnesses[i].address.state
+    required: False
+    code: |
+      states_list() 
+  - ZIP code: witnesses[i].address.zip
+    required: False
+---
+#I am using the IGAC form 
+id: get docs screen
+event: get_docs_screen
+question: |
+  Download
+subquestion: |
+  Your form is ready. View and download your form below. Click **Make changes** to fix any mistakes.
+  
+  Read the instructions to learn what to do next.
+
+  Thank you for using ILAO Easy Forms!
+  
+  ${ action_button_html(url_action('review_answers'), label=':edit: Make changes', color='success', size="md") }
+
+  ${ al_user_bundle.download_list_html() }
+ 
+  &nbsp;
+
+  ${ al_user_bundle.send_button_html(show_editable_checkbox=False) }
+  
+  **Note:** This program does not send your form. You will need to do this yourself.
+
+  Thank you for using ILAO Easy Forms!
+under: |
+  % if not user_logged_in():
+  [${fa_icon("sign-in-alt", color="#0079d0", size="sm")} **Sign-in**](${url_of('login', next=interview_url())}) or [**create**](${url_of('register', next=interview_url())}) an ILAO Easy Form account to save your progress (optional).
+  % endif
+
+ 
+  ${ action_button_html(interview_url(i="docassemble.ILAO:feedback.yml", easy_form_interview=ilao_easy_form_url, easy_form_title=ilao_easy_form_title, easy_form_page=user_info().question_id, easy_form_variable=user_info().variable, local=False,reset=1), label=':comment: Was this program helpful?', color="#181c36", size="md", new_window=True) }
+---
+generic object: ALDocumentBundle
+template: x.send_email_template
+subject: |
+  Short term guardian appointment
+content: |
+  Your forms are attached.
+  
+  Thanks for using ILAO Easy Forms!
+  
+  [**Illinois Legal Aid Online**](https://www.illinoislegalaid.org)
+---
+objects:
+  - instructions: ALDocument.using(title="Instructions", filename="instructions.pdf", has_addendum=False, enabled=True)
+  - appointment_docx: ALDocument.using(title="docx Short term guardian appointment", filename="docx_short_term_guardian_appointment.pdf", has_addendum=False, enabled=True)
+  - appointment_pdf: ALDocument.using(title="pdf Short term guardian appointment", filename="pdf_short_term_guardian_appointment.pdf", has_addendum=False, enabled=True)
+---
+objects:
+  - al_user_bundle: ALDocumentBundle.using(elements=[instructions, appointment_docx, appointment_pdf], filename="short_term_guardian_appointment.pdf", title="All forms")
+  - al_court_bundle: ALDocumentBundle.using(elements=[appointment_docx, appointment_pdf], filename="short_term_guardian_appointment.pdf", title="All forms")
+---
+attachment:
+  - name: instructions
+    variable name: instructions[i]
+    filename: instructions
+    docx template file: short_guardianship_instructions.docx
+---
+attachment:
+  - name: appointment_docx
+    variable name: appointment_docx[i]
+    filename: appointment_docx
+    docx template file: short_guardian_appointment.docx
+---
+attachment:
+  - name: appointment_pdf
+    variable name: appointment_pdf[i]
+    filename: appointment_pdf
+    skip undefined: True
+    editable: False
+    pdf template file: prepared_short_term_guardianship.pdf
+    fields:
+      - "user_name": ${users[0].name.full(middle='full')}
+      - "user_address": ${users[0].address.on_one_line(bare=True)}
+      - "child_name": ${child.name.full(middle='full') if born_yet == True else ""}
+      - "guardian_name": ${guardian.name.full(middle='full')}
+      - "guardian_address": ${guardian.address.address(bare=True)}
+      - "starts_writing": ${True if start_date == "writing" else False}
+      - "starts_physician": ${ True if start_date == "physician" else False}
+      - "starts_patient": ${True if start_date == "patient" else False}
+      - "starts_choose": ${True if start_date == "choose" else False}
+      - "choose_date": ${specific_start_date if start_date == "choose" else ""}
+      - "starts_duty": ${True if start_date == "active duty" else False}
+      - "duty_date": ${specific_start_date if start_date == "active_duty" else ""}
+      - "starts_other": ${misc_start_option_checkbox}
+      - "other_start": ${misc_start_option_text}
+      - "ends_writing": ${True if end_date == "writing" else False}
+      - "ends_physician": ${ True if end_date == "physician" else False}
+      - "ends_patient": ${True if end_date == "patient" else False}
+      - "ends_number": ${True if end_date == "choose" else False}
+      - "number_of_days": ${length_in_days if end_date == "choose" else ""}
+      - "ends_duty": ${True if end_date == "active duty" else False}
+      - "duty_end_date": ${ specific_end_date if end_date == "active duty" else ""}
+      - "ends_other": ${misc_end_option_checkbox}
+      - "other_ending": ${misc_end_option_text}
+      - "witness_1_name": ${witnesses[0].name.full(middle='full') if first_witness_known else ""}
+      - "witness_1_address": ${ witnesses[0].address.on_one_line(bare=True) if first_witness_known else ""}
+      - "witness_2_name": ${witnesses[1].name.full(middle='full') if first_witness_known == True and second_witness_known == True else ""}
+      - "witness_2_address": ${ witnesses[1].address.on_one_line(bare=True) if first_witness_known == True and second_witness_known == True else ""}
+      - "other_parent_name": ${other_parent.name.full(middle='full') if parent_or_guardian == "parent" and other_parent.consent == True else ""}
+      - "other_parent_address": ${other_parent.address.on_one_line(bare=True) if parent_or_guardian == "parent" and other_parent.consent == True else ""}
+---
+depends on:
+  - start_date
+  - start_date_event
+code: |
+  if start_date == "administrative":
+    misc_start_option_checkbox = True
+    misc_start_option_text = "On the date of an administrative separation."
+  elif start_date == "event":
+    misc_start_option_checkbox = True
+    misc_start_option_text = "On the date this event happens: " + start_date_event
+  else:
+    misc_start_option_checkbox = False
+    misc_start_option_text = ""
+  
+  if end_date == "administrative":
+    misc_end_option_checkbox = True
+    misc_end_option_text = "On the date the administrative separation is scheduled to end."
+  elif end_date == "event":
+    misc_end_option_checkbox = True
+    misc_end_option_text = "On the date this event happens: " + end_date_event
+  else:
+    misc_end_option_checkbox = False
+    misc_end_option_text = ""
+---
+id: review screen
+event: review_answers
+question: |
+  Review screen
+subquestion: |
+  Edit your answers below.
+review: 
+  - Edit: parent_or_guardian
+    button: |
+      **Are you a parent or guardian?**
+      ${capitalize(parent_or_guardian)}
+  - Edit: other_parent.consent
+    button: |
+      **Is the other parent consenting to the short-term guardianship?***
+      ${word(yesno(other_parent.consent))}
+    show if: parent_or_guardian == "parent"
+  - Edit: other_parent.name.first
+    button: |
+      **Other parent's name:**
+      ${other_parent.name.full(middle='full')}
+    show if: parent_or_guardian == "parent" and other_parent.consent == True
+  - Edit: other_parent.address.address
+    button: |
+      **${other_parent.name.full(middle='full')}'s address:**
+      ${other_parent.address.on_one_line(bare=True)}
+    show if: parent_or_guardian == "parent" and other_parent.consent == True
+  - Edit: users[0].name.first
+    button: |
+      **Your name:**
+      ${users[0].name.full(middle='full')}
+  - Edit: users[0].address.address
+    button: |
+      **Your address:**
+      ${users[0].address.on_one_line(bare=True)}
+  - Edit: born_yet
+    button: |
+      **Has the child been born?**
+      ${word(yesno(born_yet))}
+  - Edit: child.name.first
+    button: |
+      **Child's name:**
+      ${child.name.full(middle='full')}
+    show if: born_yet
+  - Edit: child.birth_date
+    button: |
+      % if born_yet == True:
+      **${child.name.full(middle='full')}'s date of birth:**
+      % else:
+      **Expected date of birth:**
+      % endif
+      ${child.birth_date}
+  - label: Edit
+    fields: 
+      - child.trial_court_index
+      - recompute:
+        - child.county
+    button: |
+      % if born_yet == True:
+      **${child.name.full(middle='full')}'s county of residence:**
+      % else:
+      **Expected county of residence:
+      % endif
+      ${end_in_county(child.county)}
+  - Edit: guardian.name.first
+    button: |
+     **Short term guardian's name:**
+     ${guardian.name.full(middle='full')}
+  - Edit: guardian.address.address
+    button: |
+      **${guardian.name.full(middle='full')}'s address:**
+      ${guardian.address.on_one_line(bare=True)}
+  - Edit: start_date
+    button: |
+      **The guardianship will begin:**
+      % if start_date == "writing":
+      On the date that I state in writing that I am no longer either willing or able to make and carry out day-to-day child care decisions concerning the child.
+      % elif start_date == "physician":
+      On the date that a physician familiar with my condition certifies in writing that I am no longer willing or able to make and carry out day-to-day child care decisions concerning the child.
+      % elif start_date == "patient":
+      On the date that I am admitted as an in-patient to a hospital or other health care institution.
+      % elif start_date == "choose":
+      On ${specific_start_date}.
+      % elif start_date == "signed":
+      On the date the form is signed and dated.
+      % elif start_date == "active duty":
+      On the date my active duty service begins: ${specific_start_date}.
+      % elif start_date == "administrative":
+      On the date of an administrative separation.
+      % elif start_date == "event":
+      On the date this event happens: ${start_date_event}
+      % endif
+  - Edit : end_date
+    button: |
+      **The guardianship will end:**
+      % if end_date == "writing":
+      On the date that I state in writing that I am willing and able to make and carry out day-to-day child care decisions concerning the child.
+      % elif end_date == "physician":
+      On the date that a physician familiar with my condition certifies in writing that I am willing and able to make and carry out day-to-day child care decisions concerning the child.
+      % elif end_date == "patient":
+      On the date that I am discharged from the hospital or other health care institution where I was admitted as an in-patient, which established the effective date.
+      % elif end_date == "choose":
+      ${length_in_days} days after the effective date.
+      % elif end_date == "active duty":
+      On ${specific_start_date}, after my active duty service ends.
+      % elif end_date == "administrative":
+      On the date the administrative separation is scheduled to end.
+      % elif end_date == "event":
+      On the date this event happens: ${end_date_event}
+      % endif
+  - Edit: first_witness_known
+    button: |
+      **Do you know who will be the first witness?**
+      ${word(yesno(first_witness_known))}
+  - Edit: witnesses[0].name.first
+    button: |
+      **First witness:**
+      ${witnesses[0].name.full(middle='full')}
+    show if: first_witness_known
+  - Edit: witnesses[0].address.address
+    button: |
+      **${witnesses[0].name.full(middle='full')}'s address:**
+      ${witnesses[0].address.on_one_line(bare=True)}
+    show if: first_witness_known
+  - Edit: second_witness_known
+    button: |
+      **Do you know who will be the second witness?**
+      ${word(yesno(second_witness_known))}
+  - Edit: witnesses[1].name.first
+    button: |
+      **Second witness:**
+      ${witnesses[0].name.full(middle='full')}
+    show if: first_witness_known == True and second_witness_known == True
+  - Edit: witnesses[1].address.address
+    button: |
+      **${witnesses[1].name.full(middle='full')}'s address:**
+      ${witnesses[1].address.on_one_line(bare=True)}
+    show if: first_witness_known == True and second_witness_known == True
+---
+section: Parents or current guardian
+id: review parents
+event: section_parents
+question: |
+  Parents or current guardian
+subquestion: |
+  Edit your answers below.
+review:
+  - Edit: parent_or_guardian
+    button: |
+      **Are you a parent or guardian?**
+      ${capitalize(parent_or_guardian)}
+  - Edit: other_parent.consent
+    button: |
+      **Is the other parent consenting to the short-term guardianship?***
+      ${word(yesno(other_parent.consent))}
+    show if: parent_or_guardian == "parent"
+  - Edit: other_parent.name.first
+    button: |
+      **Other parent's name:**
+      ${other_parent.name.full(middle='full')}
+    show if: parent_or_guardian == "parent" and other_parent.consent == True
+  - Edit: other_parent.address.address
+    button: |
+      **${other_parent.name.full(middle='full')}'s address:**
+      ${other_parent.address.on_one_line(bare=True)}
+    show if: parent_or_guardian == "parent" and other_parent.consent == True
+  - Edit: users[0].name.first
+    button: |
+      **Your name:**
+      ${users[0].name.full(middle='full')}
+  - Edit: users[0].address.address
+    button: |
+      **Your address:**
+      ${users[0].address.on_one_line(bare=True)}
+---
+section: Child
+id: review child
+event: section_child
+question: |
+  Child
+subquestion: |
+  Edit your answers below.
+review:
+  - Edit: born_yet
+    button: |
+      **Has the child been born?**
+      ${word(yesno(born_yet))}
+  - Edit: child.name.first
+    button: |
+      **Child's name:**
+      ${child.name.full(middle='full')}
+    show if: born_yet
+  - Edit: child.birth_date
+    button: |
+      % if born_yet == True:
+      **${child.name.full(middle='full')}'s date of birth:**
+      % else:
+      **Expected date of birth:**
+      % endif
+      ${child.birth_date}
+  - label: Edit
+    fields: 
+      - child.trial_court_index
+      - recompute:
+        - child.county
+    button: |
+      % if born_yet == True:
+      **${child.name.full(middle='full')}'s county of residence:**
+      % else:
+      **Expected county of residence:
+      % endif
+      ${end_in_county(child.county)}
+---
+section: Guardianship
+id: review guardianship
+event: section_guardianship
+question: |
+  Guardianship
+subquestion: |
+  Edit your answers below.
+review:
+  - Edit: guardian.name.first
+    button: |
+     **Short term guardian's name:**
+     ${guardian.name.full(middle='full')}
+  - Edit: guardian.address.address
+    button: |
+      **${guardian.name.full(middle='full')}'s address:**
+      ${guardian.address.on_one_line(bare=True)}
+  - Edit: start_date
+    button: |
+      **The guardianship will begin:**
+      % if start_date == "writing":
+      On the date that I state in writing that I am no longer either willing or able to make and carry out day-to-day child care decisions concerning the child.
+      % elif start_date == "physician":
+      On the date that a physician familiar with my condition certifies in writing that I am no longer willing or able to make and carry out day-to-day child care decisions concerning the child.
+      % elif start_date == "patient":
+      On the date that I am admitted as an in-patient to a hospital or other health care institution.
+      % elif start_date == "choose":
+      On ${specific_start_date}.
+      % elif start_date == "signed":
+      On the date the form is signed and dated.
+      % elif start_date == "active duty":
+      On the date my active duty service begins: ${specific_start_date}.
+      % elif start_date == "administrative":
+      On the date of an administrative separation.
+      % elif start_date == "event":
+      On the date this event happens: ${start_date_event}
+      % endif
+  - Edit : end_date
+    button: |
+      **The guardianship will end:**
+      % if end_date == "writing":
+      On the date that I state in writing that I am willing and able to make and carry out day-to-day child care decisions concerning the child.
+      % elif end_date == "physician":
+      On the date that a physician familiar with my condition certifies in writing that I am willing and able to make and carry out day-to-day child care decisions concerning the child.
+      % elif end_date == "patient":
+      On the date that I am discharged from the hospital or other health care institution where I was admitted as an in-patient, which established the effective date.
+      % elif end_date == "choose":
+      ${length_in_days} days after the effective date.
+      % elif end_date == "active duty":
+      On ${specific_start_date}, after my active duty service ends.
+      % elif end_date == "administrative":
+      On the date the administrative separation is scheduled to end.
+      % elif end_date == "event":
+      On the date this event happens: ${end_date_event}
+      % endif
+---
+section: Witnesses
+id: review witnesses
+event: section_witnesses
+question: |
+  Witnesses
+subquestion: |
+  Edit your answers below.
+review:
+  - Edit: first_witness_known
+    button: |
+      **Do you know who will be the first witness?**
+      ${word(yesno(first_witness_known))}
+  - Edit: witnesses[0].name.first
+    button: |
+      **First witness:**
+      ${witnesses[0].name.full(middle='full')}
+    show if: first_witness_known
+  - Edit: witnesses[0].address.address
+    button: |
+      **${witnesses[0].name.full(middle='full')}'s address:**
+      ${witnesses[0].address.on_one_line(bare=True)}
+    show if: first_witness_known
+  - Edit: second_witness_known
+    button: |
+      **Do you know who will be the second witness?**
+      ${word(yesno(second_witness_known))}
+  - Edit: witnesses[1].name.first
+    button: |
+      **Second witness:**
+      ${witnesses[0].name.full(middle='full')}
+    show if: first_witness_known == True and second_witness_known == True
+  - Edit: witnesses[1].address.address
+    button: |
+      **${witnesses[1].name.full(middle='full')}'s address:**
+      ${witnesses[1].address.on_one_line(bare=True)}
+    show if: first_witness_known == True and second_witness_known == True
