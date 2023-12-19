@@ -158,7 +158,7 @@ event: not_guardian_kickout
 question: |
   Sorry
 subquestion: |
-  Only the child's parent or guardian can appoint a short term guardian.
+  Only the child's parent or guardian can appoint a short-term guardian.
   
   Click **Back** if you made a mistake. Or you can talk with a lawyer to discuss your options. Use **[Get Legal Help](https://www.illinoislegalaid.org/get-legal-help)** to find free or low-cost legal services in your area.
 buttons:
@@ -244,9 +244,9 @@ question: |
   Why is the child's other ${parent_or_guardian} unable to agree to the short-term guardianship?
 subquestion: |
   % if parent_or_guardian == "parent":
-  To create a short-term guardianship, both parents must agree to the short-term guardianship if they are able to. If a parent has custody over the child, they are able to end a short-term guardianship
+  To create a short-term guardianship, both parents must agree to the short-term guardianship if they are able to. If a parent has custody over the child, they are able to end a short-term guardianship.
   % else:
-  To create a short-term guardianship, all of the child's guardians must agree to the short-term guardianship if they are able to. If a guardian has custody over the child, they are able to end a short-term guardianship
+  To create a short-term guardianship, all of the child's guardians must agree to the short-term guardianship if they are able to. If a guardian has custody over the child, they are able to end a short-term guardianship.
   % endif
 field: why_is_consent_unneeded 
 choices:
@@ -348,10 +348,14 @@ fields:
     alMax: |
       % if born_yet == True:
       ${today()}
+      % else:
+      ${today().plus(years=2)}
       % endif
     alMin: |
       % if born_yet == False:
       ${today()}
+      % else:
+      ${today().minus(years=18)}
       % endif  
 ---
 depends on:
@@ -438,22 +442,26 @@ fields:
       - On the date that I state in writing that I am no longer either willing or able to make and carry out day-to-day child care decisions concerning the child.: writing
       - On the date that a physician familiar with my condition certifies in writing that I am no longer willing or able to make and carry out day-to-day child care decisions concerning the child.: physician
       - On the date I am admitted as an in-patient to a hospital or other health care institution.: patient
-      - On a date that I will choose.: choose
+      - On a date that I will choose. I will enter the date below.: choose
       - On the date the form is signed and dated.: signed
         help: |
           This will leave this question blank on your form. If you sign it without picking a start date, the guardianship will begin the day you sign it.
-      - On the date my active duty service begins and end on a date no more than 30 days after my active duty service is scheduled to end.: active duty
+      - On the date my active duty service begins and end on a date no more than 30 days after my active duty service is scheduled to end. I will enter the date below.: active duty
       - On the date an administrative separation starts. : administrative
         help: |
           An administrative separation starts when you are arrested, detained, or deported. It can also start when federal, state, or local authorities give reasonable notice that your childcare will be interrupted.
-      - When a certain event happens. I will describe the event.: event
+      - When a certain event happens. I will describe the event below.: event
   - Date: specific_start_date
     datatype: date
+    min: |
+      ${today()}
     show if: 
       variable: start_date
       is: "choose"
   - Date service begins: specific_start_date
     datatype: date
+    min: |
+      ${today()}
     show if:
       variable: start_date
       is: "active duty"
@@ -470,26 +478,39 @@ question: |
 fields: 
   - End date: end_date
     input type: radio 
+    default: |
+      % if start_date == "writing":
+      writing
+      % elif start_date == "physician":
+      physician
+      % elif start_date == "patient":
+      patient
+      % elif start_date == "active duty":
+      active duty
+      % elif start_date == "administrative":
+      administrative
+      % elif start_date == "choose":
+      choose
+      % elif start_date == "signed":
+      year
+      % elif start_date == "event":
+      event
+      % endif
     choices:
       - On the date that I state in writing that I am willing and able to make and carry out day-to-day child care decisions concerning the child.: writing
-        show if: start_date == "writing"
       - On the date that a physician familiar with my condition certifies in writing that I am willing and able to make and carry out day-to-day child care decisions concerning the child.: physician
-        show if: start_date == "physician"
       - On the date that I am discharged from the hospital or other health care institution where I was admitted as an in-patient, which established the effective date.: patient
-        show if: start_date == "patient"
       - On a date which is a set number of days after the effective date. I will choose the number of days below.: choose
       - 365 days after the guardianship starts.: year
         help: |
           This is the longest a short-term guardianship can last.
           
           This answer will leave the question blank on the form. If you sign it without adding an answer, the guardianship will last as long as possible.
-      - On a date no more than 30 days after my active duty service is scheduled to end.: active duty
-        show if: start_date == "active duty"
+      - On a date no more than 30 days after my active duty service is scheduled to end. I will enter the date below.: active duty
       - On the date the administrative separation is scheduled to end. : administrative
-        show if: start_date == "administrative"
         help: |
           An administrative separation starts when you are arrested, detained, or deported. It can also start when federal, state, or local authorities give reasonable notice that your childcare will be interrupted.
-      - On the date when another event happens or when certain conditions are met. I will describe below.: event
+      - On the date when another event happens or when certain conditions are met. I will describe the event below.: event
   - Number of days: length_in_days
     datatype: integer
     max: 366
@@ -499,6 +520,7 @@ fields:
       is: "choose"
   - Date service ends: specific_end_date
     datatype: date
+    min: ${today()}
     show if:
       variable: end_date
       is: "active duty"
@@ -565,7 +587,7 @@ event: get_docs_screen
 question: |
   Download
 subquestion: |
-  Your form is ready. View and download your form below. Click **Make changes** to fix any mistakes.
+  Your forms are ready. View and download your forms below. Click **Make changes** to fix any mistakes.
   
   Read the instructions to learn what to do next.
   
