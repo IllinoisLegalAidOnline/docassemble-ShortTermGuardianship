@@ -1,5 +1,5 @@
 metadata:
-  title: Short-term guardian appointment
+  title: Short-term guardianship
   short title: Short-term guardianship
   comment:  This program helps you prepare a form to appoint a short-term guardian to be responsible your child for up to 1 year.
   authors:
@@ -32,9 +32,9 @@ sections:
   - section_download: Download
 ---
 code: |
-  ilao_easy_form_title = "Short-term guardian appointment"
+  ilao_easy_form_title = "Short-term guardianship"
   ilao_easy_form_url = "https://www.illinoislegalaid.org/legal-information/short-term-guardian-appointment"
-  form_name = "Short-term guardian appointment"
+  form_name = "Short-term guardianship"
   github_user = 'IllinoisLegalAidOnline'
   github_repo_name = 'docassemble-ShortTermGuardianship'
 ---
@@ -94,9 +94,9 @@ code: |
 ---
 id: welcome
 question: |
-  Short-term guardian appointment
+  Short-term guardianship
 subquestion: |
-  Welcome to Illinois Legal Aid Online's **Short-term guardian appointment** Easy Form.
+  Welcome to Illinois Legal Aid Online's **Short-term guardianship** Easy Form.
 
   This program helps you prepare a form to appoint a short-term guardian to be responsible your child for up to 1 year.
   
@@ -119,13 +119,13 @@ subquestion: |
  
   ${ collapse_template(help_example) }  
 
-  Click on **{green words}** to learn what they mean. Some questions have a question mark in a circle ${ fa_icon("question-circle", color_css="#0DCAF0" ) } that also gives help.
+  Click on **{green words}** to learn what they mean. Some questions have a question mark in a circle ${ fa_icon("question-circle", color_css="#0DCAF0" ) } that helps explain things.
 ---
 template: help_example
 
 subject: |
 
-  **You can expand sections like this to show more information.**
+  **You can click sections like this to show more information.**
 
 content: |  
 
@@ -446,7 +446,7 @@ fields:
       - On the date the form is signed and dated.: signed
         help: |
           This will leave this question blank on your form. If you sign it without picking a start date, the guardianship will begin the day you sign it.
-      - On the date my active duty service begins and end on a date no more than 30 days after my active duty service is scheduled to end. I will enter the date below.: active duty
+      - On the date my active duty service begins. I will enter the date below.: active duty
       - On the date an administrative separation starts. : administrative
         help: |
           An administrative separation starts when you are arrested, detained, or deported. It can also start when federal, state, or local authorities give reasonable notice that your childcare will be interrupted.
@@ -467,7 +467,7 @@ fields:
       is: "active duty"
   - Guardianship will start when this happens:: start_date_event
     input type: area
-    max: 500
+    max: 200
     show if:
       variable: start_date
       is: "event"
@@ -475,6 +475,31 @@ fields:
 id: end date
 question: |
   When will the short-term guardianship end?
+subquestion: |
+  You may need to pick an end date that matches the start date you chose.
+  
+  % if start_date == "writing":
+  Your short-term guardianship will begin when you state in writing that you are no longer either willing or able to make and carry out day-to-day child care decisions concerning the child.
+  % elif start_date == "physician":
+  Your short-term guardianship will begin when a physician familiar with your condition certifies in writing that you are no longer willing or able to make and carry out day-to-day child care decisions concerning the child.
+  % elif start_date == "patient":
+  Your short-term guardianship will begin when you are admitted as an in-patient to a hospital or other health care institution.
+  % elif start_date == "active duty":
+  Your short-term guardianship will begin when your active duty service begins on ${specific_start_date}.
+  % elif start_date == "administrative":
+  Your short-term guardianship will begin when an administrative separation starts.
+  % elif start_date == "choose":
+  Your short-term guardianship will begin on ${specific_start_date}.
+  % elif start_date == "signed":
+  Your short-term guardianship will begin when the form is signed and dated.
+  % elif start_date == "event":
+  Your short-term guardianship will begin when the following event happens:
+  
+  ---
+  ${single_to_double_newlines(start_date_event)}
+  
+  ---
+  % endif
 fields: 
   - End date: end_date
     input type: radio 
@@ -611,7 +636,7 @@ under: |
 generic object: ALDocumentBundle
 template: x.send_email_template
 subject: |
-  Short-term guardian appointment
+  Short-term guardianship
 content: |
   Your forms are attached.
   
@@ -621,11 +646,11 @@ content: |
 ---
 objects:
   - instructions: ALDocument.using(title="Instructions", filename="instructions.pdf", has_addendum=False, enabled=True)
-  - appointment_pdf: ALDocument.using(title="Short-term guardian appointment", filename="pdf_short_term_guardian_appointment.pdf", has_addendum=False, enabled=True)
+  - appointment_pdf: ALDocument.using(title="Short-term guardianship", filename="pdf_short_term_guardianship.pdf", has_addendum=False, enabled=True)
 ---
 objects:
-  - al_user_bundle: ALDocumentBundle.using(elements=[instructions, appointment_pdf], filename="short_term_guardian_appointment.pdf", title="All forms")
-  - al_court_bundle: ALDocumentBundle.using(elements=[appointment_pdf], filename="short_term_guardian_appointment.pdf", title="All forms")
+  - al_user_bundle: ALDocumentBundle.using(elements=[instructions, appointment_pdf], filename="short_term_guardianship.pdf", title="All forms")
+  - al_court_bundle: ALDocumentBundle.using(elements=[appointment_pdf], filename="short_term_guardianship.pdf", title="All forms")
 ---
 attachment:
   - name: instructions
@@ -797,6 +822,8 @@ review:
       % elif start_date == "event":
       On the date this event happens: ${start_date_event}
       % endif
+      
+      **Note:** If you change when the guardianship starts, you may also want to change when it ends.
   - Edit: end_date
     button: |
       **The guardianship will end:**
@@ -919,7 +946,7 @@ review:
       % endif
       ${end_in_county(child.county)}
 ---
-section: Guardianship
+section: Guardianship info
 id: review guardianship
 event: section_guardianship
 question: |
@@ -955,6 +982,8 @@ review:
       % elif start_date == "event":
       On the date this event happens: ${start_date_event}
       % endif
+      
+      **Note:** If you change when the guardianship starts, you may also want to change when it ends.
   - Edit: end_date
     button: |
       **The guardianship will end:**
