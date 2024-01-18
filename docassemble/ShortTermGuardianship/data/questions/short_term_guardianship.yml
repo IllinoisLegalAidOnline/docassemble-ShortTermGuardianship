@@ -119,7 +119,7 @@ subquestion: |
  
   ${ collapse_template(help_example) }  
 
-  Click on **{green words}** to learn what they mean. Some questions have a question mark in a circle ${ fa_icon("question-circle", color_css="#0DCAF0" ) } that helps explain things.
+  Click on **{green words}** to learn what they mean. Some pages have a question mark in a circle ${ fa_icon("question-circle", color_css="#0dcaf0" ) } that helps explain things.
 ---
 template: help_example
 
@@ -476,24 +476,24 @@ id: end date
 question: |
   When will the short-term guardianship end?
 subquestion: |
-  You may need to pick an end date that matches the start date you chose.
+  You may want to pick an end date that matches the start date you chose.
   
   % if start_date == "writing":
-  Your short-term guardianship will begin when you state in writing that you are no longer either willing or able to make and carry out day-to-day child care decisions concerning the child.
+  The short-term guardianship will begin when you state in writing that you are no longer either willing or able to make and carry out day-to-day child care decisions concerning the child.
   % elif start_date == "physician":
-  Your short-term guardianship will begin when a physician familiar with your condition certifies in writing that you are no longer willing or able to make and carry out day-to-day child care decisions concerning the child.
+  The short-term guardianship will begin when a physician familiar with your condition certifies in writing that you are no longer willing or able to make and carry out day-to-day child care decisions concerning the child.
   % elif start_date == "patient":
-  Your short-term guardianship will begin when you are admitted as an in-patient to a hospital or other health care institution.
+  The short-term guardianship will begin when you are admitted as an in-patient to a hospital or other health care institution.
   % elif start_date == "active duty":
-  Your short-term guardianship will begin when your active duty service begins on ${specific_start_date}.
+  The short-term guardianship will begin when your active duty service begins on ${specific_start_date}.
   % elif start_date == "administrative":
-  Your short-term guardianship will begin when an administrative separation starts.
+  The short-term guardianship will begin when an administrative separation starts.
   % elif start_date == "choose":
-  Your short-term guardianship will begin on ${specific_start_date}.
+  The short-term guardianship will begin on ${specific_start_date}.
   % elif start_date == "signed":
-  Your short-term guardianship will begin when the form is signed and dated.
+  The short-term guardianship will begin when the form is signed and dated.
   % elif start_date == "event":
-  Your short-term guardianship will begin when the following event happens:
+  The short-term guardianship will begin when the following event happens:
   
   ---
   ${single_to_double_newlines(start_date_event)}
