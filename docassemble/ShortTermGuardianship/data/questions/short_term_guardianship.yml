@@ -53,7 +53,6 @@ code: |
     not_guardian_kickout
   elif parent_or_guardian == "parent" or only_guardian == False:
     if other_parent.consent == True:
-      include_other_parent_info
       other_parent.name.first
       other_parent.address.address
     else:
@@ -85,6 +84,7 @@ code: |
     if second_witness_known == True:
       witnesses[1].name.first
       witnesses[1].address.address
+  about_signing
       
   nav.set_section('section_download')
   misc_end_option_text
@@ -170,11 +170,16 @@ depends on:
   - other_parent.consent
   - only_guardian
 code: |
-  if parent_or_guardian == "parent" or only_guardian == False:
+  if parent_or_guardian == "parent":
     if other_parent.consent == True:
       include_other_parent_info = True
     else:
       include_other_parent_info = False
+  elif only_guardian == False:
+    if other_parent.consent == True:
+      include_other_parent_info = True
+    else:
+      include_other_parent_info = False  
   else:
     include_other_parent_info = False
 ---
@@ -607,6 +612,13 @@ fields:
   - ZIP code: witnesses[i].address.zip
     required: False
 ---
+id: about signing
+continue button field: about_signing
+question: |
+  About signing
+subquestion: |
+  You can sign this form on paper or electronically. If you sign electronically, the witnesses must be "electronically present" when you sign. Electronic presence could be over a video call.
+---
 id: get docs screen
 event: get_docs_screen
 question: |
@@ -668,16 +680,16 @@ attachment:
     fields:
       - "user_name": ${users[0].name.full(middle='full')}
       - "user_address": ${users[0].address.on_one_line(bare=True)}
-      - "child_name": ${child.name.full(middle='full') if born_yet == True else ""}
+      - "child_name": ${child.name.full(middle='full') if born_yet == True else "Not yet born"}
       - "guardian_name": ${guardian.name.full(middle='full')}
       - "guardian_address": ${guardian.address.address(bare=True)}
       - "starts_writing": ${True if start_date == "writing" else False}
       - "starts_physician": ${ True if start_date == "physician" else False}
       - "starts_patient": ${True if start_date == "patient" else False}
       - "starts_choose": ${True if start_date == "choose" else False}
-      - "choose_date": ${specific_start_date if start_date == "choose" else ""}
+      - "choose_date": ${specific_start_date.format() if start_date == "choose" else ""}
       - "starts_duty": ${True if start_date == "active duty" else False}
-      - "duty_date": ${specific_start_date if start_date == "active_duty" else ""}
+      - "duty_date": ${specific_start_date.format() if start_date == "active duty" else ""}
       - "starts_other": ${misc_start_option_checkbox}
       - "other_start": ${misc_start_option_text}
       - "ends_writing": ${True if end_date == "writing" else False}
@@ -693,10 +705,9 @@ attachment:
       - "witness_1_address": ${ witnesses[0].address.on_one_line(bare=True) if first_witness_known else ""}
       - "witness_2_name": ${witnesses[1].name.full(middle='full') if first_witness_known == True and second_witness_known == True else ""}
       - "witness_2_address": ${ witnesses[1].address.on_one_line(bare=True) if first_witness_known == True and second_witness_known == True else ""}
-      - "other_parent_name": ${other_parent.name.full(middle='full') if parent_or_guardian == "parent" and other_parent.consent == True else ""}
-      - "other_parent_address": ${other_parent.address.on_one_line(bare=True) if parent_or_guardian == "parent" and other_parent.consent == True else ""}
+      - "other_parent_name": ${other_parent.name.full(middle='full') if include_other_parent_info == True else ""}
+      - "other_parent_address": ${other_parent.address.on_one_line(bare=True) if include_other_parent_info == True else ""}
       - "admin_definition": ${ admin_definition if start_date == "administrative" or end_date == "administrative" else ""}
-
 ---
 code: |
   admin_definition = "* 'Administrative separation' means a parent's, legal guardian's, legal custodian's, or primary caretaker's:"
@@ -791,7 +802,7 @@ review:
       % if born_yet == True:
       **${child.name.full(middle='full')}'s county of residence:**
       % else:
-      **Expected county of residence:
+      **Expected county of residence:**
       % endif
       ${end_in_county(child.county)}
   - Edit: guardian.name.first
@@ -942,7 +953,7 @@ review:
       % if born_yet == True:
       **${child.name.full(middle='full')}'s county of residence:**
       % else:
-      **Expected county of residence:
+      **Expected county of residence:**
       % endif
       ${end_in_county(child.county)}
 ---
