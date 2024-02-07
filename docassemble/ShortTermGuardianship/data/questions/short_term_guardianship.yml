@@ -84,7 +84,6 @@ code: |
     if second_witness_known == True:
       witnesses[1].name.first
       witnesses[1].address.address
-  about_signing
       
   nav.set_section('section_download')
   misc_end_option_text
@@ -611,13 +610,6 @@ fields:
       states_list() 
   - ZIP code: witnesses[i].address.zip
     required: False
----
-id: about signing
-continue button field: about_signing
-question: |
-  About signing
-subquestion: |
-  You can sign this form on paper or electronically. If you sign electronically, the witnesses must be "electronically present" when you sign. Electronic presence could be over a video call.
 ---
 id: get docs screen
 event: get_docs_screen
