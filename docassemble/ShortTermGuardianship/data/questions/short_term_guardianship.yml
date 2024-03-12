@@ -464,8 +464,6 @@ fields:
       - On the date I am admitted as an in-patient to a hospital or other health care institution.: patient
       - On a date that I will choose. I will enter the date below.: choose
       - On the date the form is signed and dated.: signed
-        help: |
-          This will leave this question blank on your form. If you sign it without picking a start date, the guardianship will begin the day you sign it.
       - On the date my active duty service begins. I will enter the date below.: active duty
       - On the date an administrative separation starts. : administrative
         help: |
@@ -553,11 +551,6 @@ fields:
       - On the date that a physician familiar with my condition certifies in writing that I am willing and able to make and carry out day-to-day child care decisions concerning the child.: physician
       - On the date that I am discharged from the hospital or other health care institution where I was admitted as an in-patient, which established the effective date.: patient
       - On a date which is a set number of days after the effective date. I will choose the number of days below.: choose
-      - 365 days after the guardianship starts.: year
-        help: |
-          This is the longest a short-term guardianship can last.
-          
-          This answer will leave the question blank on the form. If you sign it without adding an answer, the guardianship will last as long as possible.
       - On a date no more than 30 days after my active duty service is scheduled to end. I will enter the date below.: active duty
       - On the date the administrative separation is scheduled to end. : administrative
         help: |
@@ -565,7 +558,7 @@ fields:
       - On the date when another event happens or when certain conditions are met. I will describe the event below.: event
   - Number of days: length_in_days
     datatype: integer
-    max: 366
+    max: 365
     min: 0
     show if: 
       variable: end_date
@@ -748,6 +741,9 @@ code: |
   elif start_date == "event":
     misc_start_option_checkbox = True
     misc_start_option_text = "On the date this event happens: " + start_date_event
+  elif start_date == "signed":
+    misc_start_option_checkbox = True
+    misc_start_option_text = "On the date I sign this short-term guardianship."
   else:
     misc_start_option_checkbox = False
     misc_start_option_text = ""
