@@ -51,7 +51,9 @@ code: |
   nav.set_section('section_parents')
   if parent_or_guardian == "other":
     not_guardian_kickout
-  elif parent_or_guardian == "parent" or only_guardian == False:
+  if parent_or_guardian == "parent" and has_plenary_guardian == True:
+    plenary_guardian_kickout
+  if parent_or_guardian == "parent" or only_guardian == False:
     if other_parent.consent == True:
       other_parent.name.first
       other_parent.address.address
@@ -88,6 +90,8 @@ code: |
   nav.set_section('section_download')
   misc_end_option_text
   admin_definition
+  if parent_or_guardian == "guardian":
+    attach_guardianship
   get_docs_screen
   
 ---
@@ -97,7 +101,7 @@ question: |
 subquestion: |
   Welcome to Illinois Legal Aid Online's **Short-term guardianship** Easy Form.
 
-  This program helps you prepare a form to appoint a short-term guardian to take care of your child for up to 1 year. The short-term guardianship can take effect now or at a later time, such as an emergency.
+  This program helps you prepare a form to appoint a short-term guardian to take care of your child for up to 1 year. The short-term guardianship can take effect now or at a later time, such as in an emergency.
   
   The form you create can only be used in Illinois.
 field: sees_nav_bar
@@ -137,21 +141,23 @@ question: |
 subquestion: |
   A short-term guardian is someone who is responsible for a child for one year or less. A short-term guardian has temporary authority to make medical, educational, and personal decisions for a child. They can not apply for a passport for the child, obtain food stamps for the child, or add the child to their insurance.
   
+  ${ collapse_template(passport_etc) }
+  
   Only a parent or guardian can pick a short-term guardian. The parent or guardian does not need to go to court, but the agreement must be in writing. 
   
   You can create a short-term guardianship for a child that is not born yet.
   
   To learn more, read ILAO's article about [**getting guardianship of a child**](https://www.illinoislegalaid.org/legal-information/getting-guardianship-child-0).
-  
-  ${collapse_template(passport_etc)}
 ---
 template: passport_etc
 subject: |
   **What if I need a guardian who can apply for a passport for my child, obtain food stamps for my child, or add my child to their insurance?**
 content: |
-  A court-ordered plenary guardian can do those things. Short term guardianships are intended to be temporary. If your child needs a guardian for more than a year, you may want to speak to a lawyer about a plenary guardianship. 
+  A court-ordered plenary guardian can do those things. Short-term guardianships are intended to be temporary. If your child needs a guardian for more than a year, you may want to speak to a lawyer about a plenary guardianship. 
   
-  Use **[Get Legal Help](https://www.illinoislegalaid.org/get-legal-help)** to find free or low-cost legal services in your area. You may also call the **[Guardianship Assistance Desk for Minors](https://www.cookcountycourt.org/FOR-PEOPLE-WITHOUT-LAWYERS/Help-Desks-in-the-Courthouse/cid/219/Guardianships-for-Minors)** at 312-603-0135.
+  Use [**Get Legal Help**](https://www.illinoislegalaid.org/get-legal-help) to find free or low-cost legal services in your area. 
+  
+  If you live in Cook County, you may also call the [**Guardianship Assistance Desk for Minors**](https://www.cookcountycourt.org/FOR-PEOPLE-WITHOUT-LAWYERS/Help-Desks-in-the-Courthouse/cid/219/Guardianships-for-Minors) at 312-603-0135.
 ---
 id: parent or guardian
 question: |
@@ -167,7 +173,28 @@ event: not_guardian_kickout
 question: |
   Sorry
 subquestion: |
-  Only the child's parent or guardian can appoint a short-term guardian.
+  Only a child's parent or guardian can appoint a short-term guardian.
+  
+  Click **Back** if you made a mistake. Or you can talk with a lawyer to discuss your options. Use **[Get Legal Help](https://www.illinoislegalaid.org/get-legal-help)** to find free or low-cost legal services in your area.
+buttons:
+  - Exit: exit
+  - Restart: restart
+---
+id: plenary guardian check
+question: |
+  Does your child have a court-appointed or plenary guardian?
+subquestion: |
+  A plenary guardian is a long-term, permanent guardian. Someone can only become a plenary guardian through a court case.
+fields:
+  - no label: has_plenary_guardian
+    datatype: yesnoradio
+---
+id: plenary guardian kickout
+event: plenary_guardian_kickout
+question: |
+  Sorry
+subquestion: |
+  If your child already has a court-ordered or plenary guardian, you do not have the authority to appoint a short-term guardian. You can read ILAO's article on [**Changing adult guardianship**](https://www.illinoislegalaid.org/legal-information/changing-adult-guardianship) to learn more.
   
   Click **Back** if you made a mistake. Or you can talk with a lawyer to discuss your options. Use **[Get Legal Help](https://www.illinoislegalaid.org/get-legal-help)** to find free or low-cost legal services in your area.
 buttons:
@@ -223,6 +250,20 @@ content: |
   * The other ${parent_or_guardian}'s wherabouts are unknown.
   
   However, if the situation changes, the other ${parent_or_guardian} may be able to end the short-term guardianship.
+  
+  % if parent_or_guardian == "parent":
+  To create a short-term guardianship, both parents must agree to the short-term guardianship if they are able to. If the other parent has custody over the child, they are able to end a short-term guardianship. Their rights over the child take priority over that of the short-term guardian. 
+
+  Short-term guardianship cannot be used to avoid the custody rights of another parent. Use this program only if you have custody or authority over your child. If contacting the other parent would be dangerous, do not use this program. 
+  
+  If you need protection from the other parent, you may want to ask a court for an Order of Protection. You can use ILAO's [**Order of protection Easy Form**](https://www.illinoislegalaid.org/legal-information/order-protection) to ask for an Order of Protection.
+  % else:
+  To create a short-term guardianship, all of the child's guardians must agree to the short-term guardianship if they are able to. If another guardian has custody over the child, they are able to end a short-term guardianship. Their rights over the child take priority over that of the short-term guardian. 
+
+  Short-term guardianship cannot be used to avoid the custody rights of another guardian. Use this program only if you have custody or authority over your child. If contacting the other guardians would be dangerous, do not use this program. 
+  
+  If you need protection from the other guardians, you may want to ask a court for an Order of Protection. You can use ILAO's [**Order of protection Easy Form**](https://www.illinoislegalaid.org/legal-information/order-protection) to ask for an Order of Protection.
+  % endif
 ---
 id: other parent name
 question: |
@@ -258,13 +299,17 @@ question: |
   Why is the child's other ${parent_or_guardian} unable to agree to the short-term guardianship?
 subquestion: |
   % if parent_or_guardian == "parent":
-  To create a short-term guardianship, both parents must agree to the short-term guardianship if they are able to. If the other parent has custody over the child, they are able to end a short-term guardianship. Their rights over the child take priority over that of the short term guardian. 
+  To create a short-term guardianship, both parents must agree to the short-term guardianship if they are able to. If the other parent has custody over the child, they are able to end a short-term guardianship. Their rights over the child take priority over that of the short-term guardian. 
 
-  Short term guardianship cannot be used to avoid the custody rights of another parent. Only use this program if you have custody or authority over your child. If contacting the other parent would be dangerous, do not use this program. If you need protection from the other parent, you may want to ask a court for an order of protection. You can use ILAO's [**Order of protection Easy Form**](https://www.illinoislegalaid.org/legal-information/order-protection) to ask for an order of protection.
+  Short-term guardianship cannot be used to avoid the custody rights of another parent. Use this program only if you have custody or authority over your child. If contacting the other parent would be dangerous, do not use this program. 
+  
+  If you need protection from the other parent, you may want to ask a court for an Order of Protection. You can use ILAO's [**Order of protection Easy Form**](https://www.illinoislegalaid.org/legal-information/order-protection) to ask for an Order of Protection.
   % else:
-  To create a short-term guardianship, all of the child's guardians must agree to the short-term guardianship if they are able to. If another guardian has custody over the child, they are able to end a short-term guardianship. Their rights over the child take priority over that of the short term guardian. 
+  To create a short-term guardianship, all of the child's guardians must agree to the short-term guardianship if they are able to. If another guardian has custody over the child, they are able to end a short-term guardianship. Their rights over the child take priority over that of the short-term guardian. 
 
-  Short term guardianship cannot be used to avoid the custody rights of another guardian. Only use this program if you have custody or authority over your child. If contacting the other guardians would be dangerous, do not use this program. If you need protection from the other guardians, you may want to ask a court for an order of protection. You can use ILAO's [**Order of protection Easy Form**](https://www.illinoislegalaid.org/legal-information/order-protection) to ask for an order of protection.
+  Short-term guardianship cannot be used to avoid the custody rights of another guardian. Use this program only if you have custody or authority over your child. If contacting the other guardians would be dangerous, do not use this program. 
+  
+  If you need protection from the other guardians, you may want to ask a court for an Order of Protection. You can use ILAO's [**Order of protection Easy Form**](https://www.illinoislegalaid.org/legal-information/order-protection) to ask for an Order of Protection.
   % endif
 field: why_is_consent_unneeded 
 choices:
@@ -360,7 +405,7 @@ subquestion: |
   % if born_yet == False:
   If a doctor has predicted a date of birth, you can enter that here. Otherwise, you can provide your best estimate.
   
-  If you have questions about short-term guardianships for children not yet born, you may be able to learn more from the **[Guardianship Assistance Desk for Minors](https://www.cookcountycourt.org/FOR-PEOPLE-WITHOUT-LAWYERS/Help-Desks-in-the-Courthouse/cid/219/Guardianships-for-Minors)** at 312-603-0135.
+  If you live in Cook County and you have questions about short-term guardianships for children not yet born, you may be able to learn more from the **[Guardianship Assistance Desk for Minors](https://www.cookcountycourt.org/FOR-PEOPLE-WITHOUT-LAWYERS/Help-Desks-in-the-Courthouse/cid/219/Guardianships-for-Minors)** at 312-603-0135.
   % endif
 fields:
   - Birth date: child.birth_date
@@ -455,6 +500,10 @@ fields:
 id: start date
 question: |
   When will the short-term guardianship start?
+subquestion: |
+  No matter when you sign the short-term guardianship appointment, it will not go into effect until the date or event you put on the form.
+
+  You can click on the question marks for more information.
 fields: 
   - Start date: start_date
     input type: radio 
@@ -469,6 +518,11 @@ fields:
         help: |
           An administrative separation starts when you are arrested, detained, or deported.
       - When a certain event happens. I will describe the event below.: event
+        help: |
+          Here are some example answers:
+      
+          * "In the event that I have to move to another country."
+          * "In the event that I die while my child's godparent is away on travel."
   - Date: specific_start_date
     datatype: date
     min: |
@@ -489,20 +543,16 @@ fields:
     show if:
       variable: start_date
       is: "event"
-    help: |
-      Here are some example answers:
-      
-      * "In the event that I am deported from the country."
-      * "In the event that I die while my child's godparent is away on travel."
 ---
 id: end date
 question: |
   When will the short-term guardianship end?
 subquestion: |
-  The short-term guardianship can only last for a year. If your choice doesn't happen within a year of the guardianship starting, the guardianship will end a year after it started.
+  The short-term guardianship can last for up to one year. If your choice doesn't happen within a year of the guardianship starting, the guardianship will end a year after it started.
 
   You may want to pick an end date that matches the start date you chose.
   
+  **You said:**
   % if start_date == "writing":
   The short-term guardianship will begin when you state in writing that you are no longer either willing or able to make and carry out day-to-day child care decisions concerning the child.
   % elif start_date == "physician":
@@ -630,6 +680,15 @@ fields:
       states_list() 
   - ZIP code: witnesses[i].address.zip
     required: False
+---
+id: attach guardianship note
+continue button field: attach_guardianship
+question: |
+  Guardianship order
+subquestion: |
+  You may want to include a copy of the order that gave you guardianship over ${child.name.full(middle='full')} with the short-term guardianship appointment.
+  
+  If you have an active court case involving the child, you may want to tell the judge that you are appointing a short-term guardian.
 ---
 id: get docs screen
 event: get_docs_screen
