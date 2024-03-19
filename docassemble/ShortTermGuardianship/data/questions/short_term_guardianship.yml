@@ -1,7 +1,7 @@
 metadata:
   title: Short-term guardianship
   short title: Short-term guardianship
-  comment:  This program helps you prepare a form to appoint a short-term guardian to be responsible your child for up to 1 year.
+  comment:  This program helps you prepare a form to appoint a short-term guardian to be responsible a child for up to 1 year.
   authors:
     - Vivian McNaughton
     - Matt Newsted
@@ -56,9 +56,9 @@ code: |
       other_parent.name.first
       other_parent.address.address
     else:
-     if why_is_consent_unneeded == "None of the above":
+     if why_is_consent_unneeded == "none":
        no_consent_kickout
-    if has_plenary_guardian == True:
+    if parent_or_guardian == "parent" and has_plenary_guardian == True:
       plenary_guardian_kickout
   include_other_parent_info
   users[0].name.first
@@ -101,7 +101,7 @@ question: |
 subquestion: |
   Welcome to Illinois Legal Aid Online's **Short-term guardianship** Easy Form.
 
-  This program helps you prepare a form to appoint a short-term guardian to take care of your child for up to 1 year. The short-term guardianship can take effect now or at a later time, such as in an emergency.
+  This program helps you prepare a form to appoint a short-term guardian to take care of a child for up to 1 year. The short-term guardianship can take effect now or at a later time, such as in an emergency.
   
   The form you create can only be used in Illinois.
 field: sees_nav_bar
@@ -153,7 +153,7 @@ template: passport_etc
 subject: |
   **What if I need a guardian who can apply for a passport for my child, obtain food stamps for my child, or add my child to their insurance?**
 content: |
-  A court-ordered plenary guardian can do those things. Short-term guardianships are intended to be temporary. If your child needs a guardian for more than a year, you may want to speak to a lawyer about a plenary guardianship. 
+  A court-ordered plenary guardian can do those things. Short-term guardianships are intended to be temporary. If the child needs a guardian for more than a year, you may want to speak to a lawyer about a plenary guardianship. 
   
   Use [**Get Legal Help**](https://www.illinoislegalaid.org/get-legal-help) to find free or low-cost legal services in your area. 
   
@@ -182,7 +182,7 @@ buttons:
 ---
 id: plenary guardian check
 question: |
-  Does your child have a court-appointed or plenary guardian?
+  Does the child have a court-appointed or plenary guardian?
 subquestion: |
   A plenary guardian is a long-term, permanent guardian. Someone can only become a plenary guardian through a court case.
 fields:
@@ -194,9 +194,9 @@ event: plenary_guardian_kickout
 question: |
   Sorry
 subquestion: |
-  If your child already has a court-ordered or plenary guardian, you do not have the authority to appoint a short-term guardian. You may want to ask your child's plenary guardian to complete this program.
+  If the child already has a court-ordered or plenary guardian, you do not have the authority to appoint a short-term guardian. You may want to ask the child's plenary guardian to complete this program.
   
-  If you want to change who is the plenary guardian, you would need to file a petition. You can read ILAO's article on [**Changing adult guardianship**](https://www.illinoislegalaid.org/legal-information/changing-adult-guardianship) to learn more.
+  If the child is in your care, you may want to file a petition to discharge the guardianship. You can use ILAO's [**Minor guardianship discharge**](https://www.illinoislegalaid.org/legal-information/order-protection) to make a *Petition to Discharge Guardianship of a Minor*.
   
   Click **Back** if you made a mistake. Or you can talk with a lawyer to discuss your options. Use **[Get Legal Help](https://www.illinoislegalaid.org/get-legal-help)** to find free or low-cost legal services in your area.
 buttons:
@@ -245,26 +245,28 @@ template: no_consent_help
 subject: |
   **What if the other ${parent_or_guardian} does not agree?**
 content: |  
+  % if parent_or_guardian == "parent":
+  To create a short-term guardianship, both parents must agree to the short-term guardianship if they are able to. If the other parent has custody over the child, they are able to end a short-term guardianship. Their rights over the child take priority over that of the short-term guardian. 
+  
   You may be able to appoint a short-term guardian without the other ${parent_or_guardian} agreeing to it. You do not need the other ${parent_or_guardian} to agree if:
   
   * The other ${parent_or_guardian} is not willing or able to make and carry out day-to-day child care decisions concerning the child,
-  * The parents were never married, the other ${parent_or_guardian} is not on the child's birth certificate, and no court has issued an order establishing parentage, or
-  * The other ${parent_or_guardian}'s wherabouts are unknown.
+  * You and the other parent were never married, the other ${parent_or_guardian} is not on the child's birth certificate, and no court has issued an order establishing parentage, or
+  * The other ${parent_or_guardian}'s whereabouts are unknown.
   
   However, if the situation changes, the other ${parent_or_guardian} may be able to end the short-term guardianship.
-  
-  % if parent_or_guardian == "parent":
-  To create a short-term guardianship, both parents must agree to the short-term guardianship if they are able to. If the other parent has custody over the child, they are able to end a short-term guardianship. Their rights over the child take priority over that of the short-term guardian. 
 
-  Short-term guardianship cannot be used to avoid the custody rights of another parent. Use this program only if you have custody or authority over your child. If contacting the other parent would be dangerous, do not use this program. 
+  A short-term guardianship cannot be used to avoid the custody rights of another parent. Use this program only if you have custody, guardianship, or authority over the child. 
   
-  If you need protection from the other parent, you may want to ask a court for an Order of Protection. You can use ILAO's [**Order of protection Easy Form**](https://www.illinoislegalaid.org/legal-information/order-protection) to ask for an Order of Protection.
+  Do not contact the other parent if doing so would be dangerous. If you need protection from the other parent, you may want to ask a court for an Order of Protection. You can use ILAO's [**Order of protection Easy Form**](https://www.illinoislegalaid.org/legal-information/order-protection) to ask for an Order of Protection.
   % else:
-  To create a short-term guardianship, all of the child's guardians must agree to the short-term guardianship if they are able to. If another guardian has custody over the child, they are able to end a short-term guardianship. Their rights over the child take priority over that of the short-term guardian. 
+  To create a short-term guardianship, all of the child's guardians must agree to the short-term guardianship if they are able to. Any of the chld's plenary guardians are able to end a short-term guardianship. Their rights over the child take priority over that of the short-term guardian. 
 
-  Short-term guardianship cannot be used to avoid the custody rights of another guardian. Use this program only if you have custody or authority over your child. If contacting the other guardians would be dangerous, do not use this program. 
+  You may be able to appoint a short-term guardian without the other ${parent_or_guardian} agreeing to it. You do not need the other ${parent_or_guardian} to agree if they have died or their whereabouts are unknown. However, if the situation changes, the other ${parent_or_guardian} may be able to end the short-term guardianship. 
   
-  If you need protection from the other guardians, you may want to ask a court for an Order of Protection. You can use ILAO's [**Order of protection Easy Form**](https://www.illinoislegalaid.org/legal-information/order-protection) to ask for an Order of Protection.
+  A short-term guardianship cannot be used to keep a child away from another guardian. Use this program only if you have custody, guardianship, or authority over the child.
+  
+  Do not contact the other guardian if doing so would be dangerous. If you need protection from the other guardian, you may want to ask a court for an Order of Protection. You can use ILAO's [**Order of protection Easy Form**](https://www.illinoislegalaid.org/legal-information/order-protection) to ask for an Order of Protection.
   % endif
 ---
 id: other parent name
@@ -303,25 +305,26 @@ subquestion: |
   % if parent_or_guardian == "parent":
   To create a short-term guardianship, both parents must agree to the short-term guardianship if they are able to. If the other parent has custody over the child, they are able to end a short-term guardianship. Their rights over the child take priority over that of the short-term guardian. 
 
-  Short-term guardianship cannot be used to avoid the custody rights of another parent. Use this program only if you have custody or authority over your child. If contacting the other parent would be dangerous, do not use this program. 
+  A short-term guardianship cannot be used to avoid the custody rights of another parent. Use this program only if you have custody or authority over the child. 
   
-  If you need protection from the other parent, you may want to ask a court for an Order of Protection. You can use ILAO's [**Order of protection Easy Form**](https://www.illinoislegalaid.org/legal-information/order-protection) to ask for an Order of Protection.
+   Do not contact the other parent if doing so would be dangerous. If you need protection from the other parent, you may want to ask a court for an Order of Protection. You can use ILAO's [**Order of protection Easy Form**](https://www.illinoislegalaid.org/legal-information/order-protection) to ask for an Order of Protection.
   % else:
-  To create a short-term guardianship, all of the child's guardians must agree to the short-term guardianship if they are able to. If another guardian has custody over the child, they are able to end a short-term guardianship. Their rights over the child take priority over that of the short-term guardian. 
+  To create a short-term guardianship, all of the child's guardians must agree to the short-term guardianship if they are able to. If the child has another guardian, that guardian is able to end a short-term guardianship. Their rights over the child take priority over that of the short-term guardian. 
 
-  Short-term guardianship cannot be used to avoid the custody rights of another guardian. Use this program only if you have custody or authority over your child. If contacting the other guardians would be dangerous, do not use this program. 
+  A short-term guardianship cannot be used to keep a child away from another guardian. Use this program only if you have custody, guardianship, or authority over the child.
   
-  If you need protection from the other guardians, you may want to ask a court for an Order of Protection. You can use ILAO's [**Order of protection Easy Form**](https://www.illinoislegalaid.org/legal-information/order-protection) to ask for an Order of Protection.
+   Do not contact the other guardian if doing so would be dangerous. If you need protection from the other guardian, you may want to ask a court for an Order of Protection. You can use ILAO's [**Order of protection Easy Form**](https://www.illinoislegalaid.org/legal-information/order-protection) to ask for an Order of Protection.
   % endif
 field: why_is_consent_unneeded 
 choices:
   - They have died.: died
   - "Their whereabouts are unknown.": where
   - They are not willing or able to make and carry out day-to-day child care decisions concerning the child.: unable
-  - "The child's parents were never married and no court has issued an order establishing parentage.": parentage
+    show if: parent_or_guardian == "parent"
+  - "The child has no legal father.": parentage
     show if: parent_or_guardian == "parent"
     help: |
-      If the other parent is listed on the child's birth certificate, do **not** pick this option.
+      If the child's birth certificate lists two parents, do **not** pick this option.
   - None of the above: none
 ---
 id: absent parent note
@@ -342,8 +345,12 @@ event: no_consent_kickout
 question: |
   Sorry
 subquestion: |
-  If the child's other parent has custody rights over the child, you need their consent in order to use this program.
+  If the child's other ${parent_or_guardian} has custody, guardianship, or authority over the child, you need their consent in order to use this program.
   
+  % if parent_or_guardian == "guardian":
+  If the child's other guardian is no longer serving as guardian, you may want to file a petition to discharge their guardianship. You can use ILAO's [**Minor guardianship discharge**](https://www.illinoislegalaid.org/legal-information/order-protection) to make a *Petition to Discharge Guardianship of a Minor*.
+  
+  % endif
   Click **Back** if you made a mistake. Or you can talk with a lawyer to discuss your options. Use **[Get Legal Help](https://www.illinoislegalaid.org/get-legal-help)** to find free or low-cost legal services in your area.
 buttons:
   - Exit: exit
@@ -474,7 +481,7 @@ code: |
 ---
 id: guardian name
 question: |
-  Who do you want to be the short-term guardian of your child?
+  Who do you want to be the short-term guardian of the child?
 fields:
   - First: guardian.name.first
   - Middle: guardian.name.middle
