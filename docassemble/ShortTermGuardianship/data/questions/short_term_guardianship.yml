@@ -51,8 +51,6 @@ code: |
   nav.set_section('section_parents')
   if parent_or_guardian == "other":
     not_guardian_kickout
-  if parent_or_guardian == "parent" and has_plenary_guardian == True:
-    plenary_guardian_kickout
   if parent_or_guardian == "parent" or only_guardian == False:
     if other_parent.consent == True:
       other_parent.name.first
@@ -60,6 +58,8 @@ code: |
     else:
      if why_is_consent_unneeded == "None of the above":
        no_consent_kickout
+    if has_plenary_guardian == True:
+      plenary_guardian_kickout
   include_other_parent_info
   users[0].name.first
   users[0].address.address
@@ -194,7 +194,9 @@ event: plenary_guardian_kickout
 question: |
   Sorry
 subquestion: |
-  If your child already has a court-ordered or plenary guardian, you do not have the authority to appoint a short-term guardian. You can read ILAO's article on [**Changing adult guardianship**](https://www.illinoislegalaid.org/legal-information/changing-adult-guardianship) to learn more.
+  If your child already has a court-ordered or plenary guardian, you do not have the authority to appoint a short-term guardian. You may want to ask your child's plenary guardian to complete this program.
+  
+  If you want to change who is the plenary guardian, you would need to file a petition. You can read ILAO's article on [**Changing adult guardianship**](https://www.illinoislegalaid.org/legal-information/changing-adult-guardianship) to learn more.
   
   Click **Back** if you made a mistake. Or you can talk with a lawyer to discuss your options. Use **[Get Legal Help](https://www.illinoislegalaid.org/get-legal-help)** to find free or low-cost legal services in your area.
 buttons:
@@ -686,7 +688,7 @@ continue button field: attach_guardianship
 question: |
   Guardianship order
 subquestion: |
-  You may want to include a copy of the order that gave you guardianship over ${child.name.full(middle='full')} with the short-term guardianship appointment.
+  Since you are ${child.name.full(middle='full')}'s guardian, you may want to include a copy of the order that gave you guardianship with the short-term guardianship appointment. This will help prove that you have the authority to appoint a short-term guardian.
   
   If you have an active court case involving the child, you may want to tell the judge that you are appointing a short-term guardian.
 ---
