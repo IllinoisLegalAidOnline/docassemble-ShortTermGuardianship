@@ -511,10 +511,10 @@ question: |
   When will the short-term guardianship start?
 subquestion: |
   No matter when you sign the short-term guardianship appointment, it will not go into effect until the date or event you put on the form.
-
-  You can click on the question marks for more information.
   
   ${collapse_template(admin_explainer)}
+
+  You can click on the question marks for more information.
 fields: 
   - Start date: start_date
     input type: radio 
@@ -551,20 +551,21 @@ fields:
   - Guardianship will start when this happens:: start_date_event
     input type: area
     maxlength: 200
+    rows: 5
     show if:
       variable: start_date
       is: "event"
 ---
 template: admin_explainer
 subject: |
-  **What if I am going to jail or being deported?**
+  **What if I am going to jail, getting detained, or being deported?**
 content: |
   If you are going to jail or being deported, you may want to pick "On the date an administrative separation starts."
 
-  Administrative separation can refer to:
-  
-  * Arrest, detention, incarceration, removal, or deportation in connection with federal immigration enforcement, or
-  * Receipt of official communication by federal, State, or local authorities regarding immigration enforcement that gives reasonable notice that care and supervision of the child by the parent, legal guardian, legal custodian, or primary caretaker will be interrupted or cannot be provided.
+  Administrative separation means:
+
+  * Being arrested, held, jailed, deported, or removed, or
+  * Immigration enforcement disrupting your ability to care for your child.
 ---
 id: end date
 question: |
@@ -645,7 +646,8 @@ fields:
       If your service does not end within a year of the short-term guardianship starting, the guardianship will end a year after it started.
   - Guardianship will end when this happens:: end_date_event
     input type: area
-    maxlength: 500
+    maxlength: 200
+    rows: 5
     show if:
       variable: end_date
       is: "event"
@@ -807,7 +809,7 @@ code: |
   admin_definition += "\n"
   admin_definition += "a)	arrest, detention, incarceration, removal, or deportation in connection with federal immigration enforcement, or"
   admin_definition += "\n"
-  admin_definition += "b)	receipt of official communication by federal, State, or local authorities regarding immigration enforcement that gives reasonable notice that care and supervision of the child by the parent, legal guardian, legal custodian, or primary caretaker will be interrupted or cannot be provided."
+  admin_definition += "b)	receipt of official communication by federal, state, or local authorities regarding immigration enforcement that gives reasonable notice that care and supervision of the child by the parent, legal guardian, legal custodian, or primary caretaker will be interrupted or cannot be provided."
 
 ---
 depends on:
