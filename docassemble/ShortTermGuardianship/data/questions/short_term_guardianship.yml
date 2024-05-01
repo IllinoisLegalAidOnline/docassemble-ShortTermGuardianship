@@ -632,7 +632,7 @@ fields:
       - On a date no more than 30 days after my active duty service is scheduled to end. I will enter the date below.: active duty
       - On the date the administrative separation is scheduled to end. : administrative
         help: |
-          AAn administrative separation ends when you can resume care of your child. For example, when you are no longer detained by immigration enforcement or you can reenter the country.
+          An administrative separation ends when you can resume care of your child. For example, when you are no longer detained by immigration enforcement or you can reenter the country.
       - On the date when another event happens or when certain conditions are met. I will describe the event below.: event
   - Number of days: length_in_days
     datatype: integer
