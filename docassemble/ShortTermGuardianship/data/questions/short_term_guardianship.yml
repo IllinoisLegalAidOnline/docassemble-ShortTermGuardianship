@@ -51,6 +51,7 @@ code: |
   nav.set_section('section_parents')
   if parent_or_guardian == "other":
     not_guardian_kickout
+  set_progress(20)
   if parent_or_guardian == "parent" or only_guardian == False:
     if other_parent.consent == True:
       other_parent.name.first
@@ -62,6 +63,7 @@ code: |
       plenary_guardian_kickout
   include_other_parent_info
   users[0].name.first
+  set_progress(40)
   users[0].address.address
   
   nav.set_section('section_child')
@@ -73,6 +75,7 @@ code: |
       adult_child_kickout
   #child.county
   
+  set_progress(60)
   nav.set_section('section_guardianship')
   guardian.name.first
   guardian.address.address
@@ -80,6 +83,7 @@ code: |
   end_date
     
   nav.set_section('section_witnesses')
+  set_progress(80)
   if first_witness_known == True:
     witnesses[0].name.first  
     witnesses[0].address.address
@@ -92,6 +96,7 @@ code: |
   admin_definition
   if parent_or_guardian == "guardian":
     attach_guardianship
+  set_progress(100)
   get_docs_screen
   
 ---
@@ -527,7 +532,7 @@ fields:
       - On the date my active duty service begins. I will enter the date below.: active duty
       - On the date an administrative separation starts. : administrative
         help: |
-          An administrative separation starts when you are arrested, detained, or deported.
+          An administrative separation starts when you are arrested, detained, or deported due to immigration enforcement.
       - When a certain event happens. I will describe the event below.: event
         help: |
           Here are some example answers:
@@ -558,14 +563,14 @@ fields:
 ---
 template: admin_explainer
 subject: |
-  **What if I am going to jail, getting detained, or being deported?**
+  **What if I'm worried about being separated or deported due to immigration enforcement?**
 content: |
-  If you are going to jail or being deported, you may want to pick "On the date an administrative separation starts."
+  If you want the short-term guardianship to start if you are held or deported for immigration, you may want to pick "On the date an administrative separation starts."
 
   Administrative separation means:
 
-  * Being arrested, held, jailed, deported, or removed, or
-  * Immigration enforcement disrupting your ability to care for your child.
+  * Being arrested, held, jailed, deported, or removed as part of immigration enforcement, or
+  * Receiving notice from the government that immigration enforcement might prevent your ability to care for your child.
 ---
 id: end date
 question: |
@@ -627,7 +632,7 @@ fields:
       - On a date no more than 30 days after my active duty service is scheduled to end. I will enter the date below.: active duty
       - On the date the administrative separation is scheduled to end. : administrative
         help: |
-          An administrative separation ends when you are released or allowed to reenter the country.
+          An administrative separation ends when your prison sentence ends, you are no longer incarcerated,  or you are allowed to reenter the country.
       - On the date when another event happens or when certain conditions are met. I will describe the event below.: event
   - Number of days: length_in_days
     datatype: integer
