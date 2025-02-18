@@ -311,11 +311,14 @@ content: |
 id: other parent name
 question: |
   What is the other ${parent_or_guardian}'s name?
+subquestion: |
+  If they don't have a first name and a last name, you can enter their name in the field labeled **First** and leave the other fields blank.
 fields:
   - First: other_parent.name.first
   - Middle: other_parent.name.middle
     required: False
   - Last: other_parent.name.last
+    required: False
   - Suffix: other_parent.name.suffix
     code: |
       name_suffix()
@@ -398,11 +401,14 @@ buttons:
 id: user name
 question:  |
   What is your name?
+subquestion: |
+    If you don't have a first name and a last name, you can enter your name in the field labeled **First** and leave the other fields blank.
 fields:
   - First: users[0].name.first
   - Middle: users[0].name.middle
     required: False
   - Last: users[0].name.last
+    required: False
   - Suffix: users[0].name.suffix
     code: |
       name_suffix()
@@ -432,11 +438,14 @@ fields:
 id: child name
 question: |
   What is the child's name?
+subquestion: |
+    If they don't have a first name and a last name, you can enter their name in the field labeled **First** and leave the other fields blank.
 fields:
   - First: child.name.first
   - Middle: child.name.middle
     required: False
   - Last: child.name.last
+    required: False
   - Suffix: child.name.suffix
     code: |
       name_suffix()
@@ -521,11 +530,14 @@ code: |
 id: guardian name
 question: |
   Who do you want to be the short-term guardian of the child?
+subquestion: |
+  If they don't have a first name and a last name, you can enter their name in the field labeled **First** and leave the other fields blank.
 fields:
   - First: guardian.name.first
   - Middle: guardian.name.middle
     required: False
   - Last: guardian.name.last
+    required: False
   - Suffix: guardian.name.suffix
     code: |
       name_suffix()
@@ -714,11 +726,14 @@ fields:
 id: witness name
 question: |
   What is the name of your ${ ordinal(i) } witness?
+subquestion: |
+  If they don't have a first name and a last name, you can enter their name in the field labeled **First** and leave the other fields blank.
 fields:
   - First: witnesses[i].name.first
   - Middle: witnesses[i].name.middle
     required: False
   - Last: witnesses[i].name.last  
+    required: False
   - Suffix: witnesses[i].name.suffix
     code: |
       name_suffix()
