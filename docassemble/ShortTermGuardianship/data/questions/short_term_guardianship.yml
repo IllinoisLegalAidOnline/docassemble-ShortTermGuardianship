@@ -65,7 +65,7 @@ code: |
   include_other_parent_info
   users[0].name.first
   set_progress(40)
-  users[0].address.address
+  unhoused_user
   
   nav.set_section('section_child')
   if born_yet == True:
@@ -327,17 +327,24 @@ fields:
 id: other parent address
 question: |
   What is ${other_parent.name.full(middle='full')}'s address?
+subquestion: |
+    If you do not know ${other_parent.name.full(middle='full')}'s address, you can leave this blank.
 fields:
   - Street address: other_parent.address.address
     address autocomplete: True
+    required: False
   - Address line 2: other_parent.address.unit
     required: False
   - City: other_parent.address.city
+    required: False
   - State: other_parent.address.state
+    required: False
     code: |
       states_list() 
   - ZIP code: other_parent.address.zip
+    required: False
   - County: other_parent.address.county
+    required: False
 ---
 #Do we need to add an option about child custody?
 id: why is consent unneeded
@@ -417,16 +424,33 @@ fields:
 id: user address
 question: |
   What is your address?
+subquestion: |
+    ${collapse_template(unhoused_address)}
 fields:
   - Street address: users[0].address.address
     address autocomplete: True
+    hide if: unhoused_user
   - Address line 2: users[0].address.unit
+    hide if: unhoused_user
     required: False
   - City: users[0].address.city
+    hide if: unhoused_user
   - State: users[0].address.state
+    hide if: unhoused_user
     code: |
       states_list() 
   - ZIP code: users[0].address.zip
+    hide if: unhoused_user
+  - I am unhoused and do not have a mailing address.: unhoused_user
+    datatype: yesnowide
+---
+template: unhoused_address
+subject: |
+  **Making a guardianship without an address**
+content: |
+  If you are currently unhoused and do not have a mailing address, you can still create a short-term guardianship. The guardian will need to have an address, however.
+
+  If you would like a legal aid organization to help you, use [**Get Legal Help**](https://www.illinoislegalaid.org/get-legal-help) to find free or low-cost legal services in your area. 
 ---
 id: born yet
 question: |
