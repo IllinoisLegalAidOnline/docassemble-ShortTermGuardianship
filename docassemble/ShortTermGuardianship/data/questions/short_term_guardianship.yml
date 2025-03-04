@@ -56,7 +56,7 @@ code: |
   if parent_or_guardian == "parent" or only_guardian == False:
     if other_parent.consent == True:
       other_parent.name.first
-      other_parent.address.address
+      unhoused_other_parent
     else:
      if why_is_consent_unneeded == "none":
        no_consent_kickout
@@ -332,19 +332,27 @@ subquestion: |
 fields:
   - Street address: other_parent.address.address
     address autocomplete: True
+    js disable if: val('unhoused_other_parent') == true
     required: False
   - Address line 2: other_parent.address.unit
+    js disable if: val('unhoused_other_parent') == true
     required: False
   - City: other_parent.address.city
     required: False
+    js disable if: val('unhoused_other_parent') == true
   - State: other_parent.address.state
     required: False
+    js disable if: val('unhoused_other_parent') == true
     code: |
       states_list() 
   - ZIP code: other_parent.address.zip
+    js disable if: val('unhoused_other_parent') == true
     required: False
   - County: other_parent.address.county
+    js disable if: val('unhoused_other_parent') == true
     required: False
+  - They are unhoused and do not have a mailing address.: unhoused_other_parent
+    datatype: yesnowide
 ---
 #Do we need to add an option about child custody?
 id: why is consent unneeded
@@ -429,18 +437,23 @@ subquestion: |
 fields:
   - Street address: users[0].address.address
     address autocomplete: True
-    hide if: unhoused_user
+    js disable if: val('unhoused_user') == true
+    #hide if: unhoused_user
   - Address line 2: users[0].address.unit
-    hide if: unhoused_user
+    js disable if: val('unhoused_user') == true
+    #hide if: unhoused_user
     required: False
   - City: users[0].address.city
-    hide if: unhoused_user
+    js disable if: val('unhoused_user') == true
+    #hide if: unhoused_user
   - State: users[0].address.state
-    hide if: unhoused_user
+    js disable if: val('unhoused_user') == true
+    #hide if: unhoused_user
     code: |
       states_list() 
   - ZIP code: users[0].address.zip
-    hide if: unhoused_user
+    js disable if: val('unhoused_user') == true
+    #hide if: unhoused_user
   - I am unhoused and do not have a mailing address.: unhoused_user
     datatype: yesnowide
 ---
@@ -950,19 +963,27 @@ review:
       **Other ${parent_or_guardian}'s name:**
       ${other_parent.name.full(middle='full')}
     show if: include_other_parent_info
-  - Edit: other_parent.address.address
+  - Edit: unhoused_other_parent
     button: |
       **${other_parent.name.full(middle='full')}'s address:**
+      % if unhoused_other_parent:
+      They are unhoused.
+      % else:
       ${other_parent.address.on_one_line(bare=True)}
+      % endif
     show if: include_other_parent_info
   - Edit: users[0].name.first
     button: |
       **Your name:**
       ${users[0].name.full(middle='full')}
-  - Edit: users[0].address.address
+  - Edit: unhoused_user
     button: |
       **Your address:**
+      % if unhoused_user:
+      I am unhoused.
+      % else:
       ${users[0].address.on_one_line(bare=True)}
+      % endif
   - Edit: born_yet
     button: |
       **Has the child been born?**
@@ -1092,19 +1113,27 @@ review:
       **Other ${parent_or_guardian}'s name:**
       ${other_parent.name.full(middle='full')}
     show if: include_other_parent_info
-  - Edit: other_parent.address.address
+  - Edit: unhoused_other_parent
     button: |
       **${other_parent.name.full(middle='full')}'s address:**
+      % if unhoused_other_parent:
+      They are unhoused.
+      % else:
       ${other_parent.address.on_one_line(bare=True)}
+      % endif
     show if: include_other_parent_info
   - Edit: users[0].name.first
     button: |
       **Your name:**
       ${users[0].name.full(middle='full')}
-  - Edit: users[0].address.address
+  - Edit: unhoused_user
     button: |
       **Your address:**
+      % if unhoused_user:
+      I am unhoused.
+      % else:
       ${users[0].address.on_one_line(bare=True)}
+      % endif
 ---
 section: Child
 id: child review screen
