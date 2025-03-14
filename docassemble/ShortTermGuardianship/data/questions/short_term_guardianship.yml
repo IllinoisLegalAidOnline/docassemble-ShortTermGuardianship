@@ -19,6 +19,8 @@ objects:
   - guardian: ALIndividual
   - witnesses: ALPeopleList.using(there_are_any=True)
   - court_list: ALCourtLoader.using(file_name='docassemble.ILAO:data/sources/il_courts.xlsx')
+  - user_mail: ALAddress
+  - other_parent_mail: ALAddress
 ---
 sections:
   - review_answers: Review your answers
@@ -56,7 +58,8 @@ code: |
   if parent_or_guardian == "parent" or only_guardian == False:
     if other_parent.consent == True:
       other_parent.name.first
-      unhoused_other_parent
+      if unhoused_other_parent:
+        parent_have_mail
     else:
      if why_is_consent_unneeded == "none":
        no_consent_kickout
@@ -65,7 +68,8 @@ code: |
   include_other_parent_info
   users[0].name.first
   set_progress(40)
-  unhoused_user
+  if unhoused_user:
+    user_have_mail
   
   nav.set_section('section_child')
   if born_yet == True:
@@ -353,6 +357,52 @@ fields:
     required: False
   - They are unhoused and do not have a mailing address.: unhoused_other_parent
     datatype: yesnowide
+---
+id: other parent mailing address
+question: |
+  Does ${other_parent.name.full(middle='full')} have an address where they can get mail?
+subquestion: |
+  This could be a post office box or a housing shelter that holds mail for them.
+fields:
+  - no label: parent_have_mail
+    datatype: yesnoradio
+  - Mailing address: other_parent_mail.address
+    address autocomplete: True
+    show if: parent_have_mail
+  - Address line 2: other_parent_mail.unit
+    required: False
+    show if: parent_have_mail
+  - City: other_parent_mail.city
+    show if: parent_have_mail
+  - State: other_parent_mail.state
+    show if: parent_have_mail
+    code: |
+      states_list() 
+  - ZIP code: other_parent_mail.zip
+    show if: parent_have_mail
+---
+id: user mailing address
+question: |
+  Do you have an address where you can get mail?
+subquestion: |
+  This could be a post office box or a housing shelter that holds mail for you.
+fields:
+  - no label: user_have_mail
+    datatype: yesnoradio
+  - Mailing address: user_mail.address
+    address autocomplete: True
+    show if: user_have_mail
+  - Address line 2: user_mail.unit
+    required: False
+    show if: user_have_mail
+  - City: user_mail.city
+    show if: user_have_mail
+  - State: user_mail.state
+    show if: user_have_mail
+    code: |
+      states_list() 
+  - ZIP code: user_mail.zip
+    show if: user_have_mail
 ---
 #Do we need to add an option about child custody?
 id: why is consent unneeded
@@ -876,7 +926,14 @@ attachment:
     pdf template file: prepared_short_term_guardianship.pdf
     fields:
       - "user_name": ${users[0].name.full(middle='full')}
-      - "user_address": ${users[0].address.on_one_line(bare=True)}
+      - "user_address": |
+          % if unhoused_user and user_have_mail:
+          reachable by mail at ${user_mail.on_one_line(bare=True)}
+          % elif unhoused_user:
+          currently unhoused
+          % else:
+          {users[0].address.on_one_line(bare=True)}
+          % endif
       - "child_name": ${child.name.full(middle='full') if born_yet == True else "Not yet born"}
       - "guardian_name": ${guardian.name.full(middle='full')}
       - "guardian_address": ${guardian.address.on_one_line(bare=True)}
@@ -903,8 +960,19 @@ attachment:
       - "witness_2_name": ${witnesses[1].name.full(middle='full') if second_witness_known else ""}
       - "witness_2_address": ${ witnesses[1].address.on_one_line(bare=True) if second_witness_known else ""}
       - "other_parent_name": ${other_parent.name.full(middle='full') if include_other_parent_info == True else ""}
-      - "other_parent_address": ${other_parent.address.on_one_line(bare=True) if include_other_parent_info == True else ""}
+      - "other_parent_address": |
+          % if include_other_parent_info:
+          % if unhoused_other_parent and parent_have_mail:
+          reachable by mail at ${other_parent_mail.on_one_line(bare=True)}
+          % elif unhoused_other_parent:
+          currently unhoused
+          % else:
+          ${other_parent.address.on_one_line(bare=True)}
+          % endif
+          % endif
       - "admin_definition": ${ admin_definition if start_date == "administrative" or end_date == "administrative" else ""}
+      - "cross_out_user_residing": ${"________________" if unhoused_user else ""}
+      - "cross_out_other_parent_residing": ${"________________" if unhoused_other_parent else ""}
 ---
 code: |
   admin_definition = "* 'Administrative separation' means a parent's, legal guardian's, legal custodian's, or primary caretaker's:"
@@ -972,6 +1040,18 @@ review:
       ${other_parent.address.on_one_line(bare=True)}
       % endif
     show if: include_other_parent_info
+  - Edit: parent_have_mail
+    button: |
+      **Does ${other_parent.name.full(middle='full')} have a mailing address?**
+      % if parent_have_mail:
+      Yes
+      
+      **Mailing address:**
+      ${other_parent_mail.on_one_line(bare=True)}
+      % else:
+      No
+      % endif
+    show if: include_other_parent_info and unhoused_other_parent
   - Edit: users[0].name.first
     button: |
       **Your name:**
@@ -984,6 +1064,18 @@ review:
       % else:
       ${users[0].address.on_one_line(bare=True)}
       % endif
+  - Edit: user_have_mail
+    button: |
+      **Do you have a mailing address?**
+      % if user_have_mail:
+      Yes
+      
+      **Mailing address:**
+      ${user_mail.on_one_line(bare=True)}
+      % else:
+      No
+      % endif
+    show if: unhoused_user
   - Edit: born_yet
     button: |
       **Has the child been born?**
@@ -1122,6 +1214,18 @@ review:
       ${other_parent.address.on_one_line(bare=True)}
       % endif
     show if: include_other_parent_info
+  - Edit: parent_have_mail
+    button: |
+      **Does ${other_parent.name.full(middle='full')} have a mailing address?**
+      % if parent_have_mail:
+      Yes
+      
+      **Mailing address:**
+      ${other_parent_mail.on_one_line(bare=True)}
+      % else:
+      No
+      % endif
+    show if: include_other_parent_info and unhoused_other_parent
   - Edit: users[0].name.first
     button: |
       **Your name:**
@@ -1134,6 +1238,18 @@ review:
       % else:
       ${users[0].address.on_one_line(bare=True)}
       % endif
+  - Edit: user_have_mail
+    button: |
+      **Do you have a mailing address?**
+      % if user_have_mail:
+      Yes
+      
+      **Mailing address:**
+      ${user_mail.on_one_line(bare=True)}
+      % else:
+      No
+      % endif
+    show if: unhoused_user
 ---
 section: Child
 id: child review screen
