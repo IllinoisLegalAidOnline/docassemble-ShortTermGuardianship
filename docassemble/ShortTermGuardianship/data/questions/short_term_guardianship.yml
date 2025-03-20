@@ -907,7 +907,7 @@ attachment:
       - "user_name": ${users[0].name.full(middle='full')}
       - "user_address": |
           % if address_type == "mail":
-          reachable by mail at ${users[0].address.on_one_line(bare=True)}
+          ${users[0].address.on_one_line(bare=True)}
           % elif address_type == "unhoused":
           currently unhoused
           % else:
@@ -941,7 +941,7 @@ attachment:
       - "other_parent_name": ${other_parent.name.full(middle='full') if include_other_parent_info == True else ""}
       - "other_parent_address": |
           % if parent_address_type == "mail":
-          reachable by mail at ${other_parent.address.on_one_line(bare=True)}
+          ${other_parent.address.on_one_line(bare=True)}
           % elif parent_address_type == "unhoused":
           currently unhoused
           % else:
@@ -950,6 +950,8 @@ attachment:
       - "admin_definition": ${ admin_definition if start_date == "administrative" or end_date == "administrative" else ""}
       - "cross_out_user_residing": ${"________________" if address_type != "live" else ""}
       - "cross_out_other_parent_residing": ${"________________" if parent_address_type != "live" else ""}
+      - "mail_text": ${"reachable by mail at" if address_type == "mail" else ""}
+      - "parent_mail_text": ${"reachable by mail at" if parent_address_type == "mail" else ""}
 ---
 code: |
   admin_definition = "* 'Administrative separation' means a parent's, legal guardian's, legal custodian's, or primary caretaker's:"
