@@ -329,9 +329,9 @@ fields:
 ---
 id: other parent address
 question: |
-  What is ${other_parent.name.full(middle='full')}'s address?
+  What is ${other_parent.name_full()}'s address?
 subquestion: |
-    If you do not know ${other_parent.name.full(middle='full')}'s address, you can leave this blank.
+    If you do not know ${other_parent.name_full()}'s address, you can leave this blank.
 fields:
   - no label: parent_address_type
     input type: radio
@@ -520,7 +520,7 @@ fields:
 id: child birthdate
 question: |
   % if born_yet == True:
-  When was ${child.name.full(middle='full')} born?
+  When was ${child.name_full()} born?
   % else:
   What is the expected date of birth?
   % endif
@@ -567,7 +567,7 @@ buttons:
 id: filing county
 question: |
   % if born_yet == True:  
-  Which county does ${child.name.full(middle='full')} live in?
+  Which county does ${child.name_full()} live in?
   % else:
   Which county will the child live in?
   % endif
@@ -611,7 +611,7 @@ fields:
 ---
 id: guardian address
 question: |
-  What is ${guardian.name.full(middle='full')}'s address?
+  What is ${guardian.name_full()}'s address?
 fields:
   - Street address: guardian.address.address
     address autocomplete: True
@@ -807,9 +807,9 @@ fields:
 ---
 id: witness address
 question: |
-  What is ${witnesses[i].name.full(middle="full") }'s address?
+  What is ${witnesses[i].name_full() }'s address?
 subquestion: |
-  If you do not know this now, you can leave this blank. You will need to add this information when ${witnesses[i].name.full(middle='full')} signs the form.
+  If you do not know this now, you can leave this blank. You will need to add this information when ${witnesses[i].name_full()} signs the form.
 fields:
   - Street address: witnesses[i].address.address
     address autocomplete: True
@@ -830,7 +830,7 @@ continue button field: attach_guardianship
 question: |
   Guardianship order
 subquestion: |
-  Since you are ${child.name.full(middle='full')}'s guardian, you may want to include a copy of the order that gave you guardianship with the short-term guardianship appointment. This will help prove that you have the authority to appoint a short-term guardian.
+  Since you are ${child.name_full()}'s guardian, you may want to include a copy of the order that gave you guardianship with the short-term guardianship appointment. This will help prove that you have the authority to appoint a short-term guardian.
   
   If you have an active court case involving the child, you may want to tell the judge that you are appointing a short-term guardian.
 ---
@@ -904,7 +904,7 @@ attachment:
     editable: False
     pdf template file: prepared_short_term_guardianship.pdf
     fields:
-      - "user_name": ${users[0].name.full(middle='full')}
+      - "user_name": ${users[0].name_full()}
       - "user_address": |
           % if address_type == "mail":
           ${users[0].address.on_one_line(bare=True)}
@@ -913,8 +913,8 @@ attachment:
           % else:
           ${users[0].address.on_one_line(bare=True)}
           % endif
-      - "child_name": ${child.name.full(middle='full') if born_yet == True else "Not yet born"}
-      - "guardian_name": ${guardian.name.full(middle='full')}
+      - "child_name": ${child.name_full() if born_yet == True else "Not yet born"}
+      - "guardian_name": ${guardian.name_full()}
       - "guardian_address": ${guardian.address.on_one_line(bare=True)}
       - "starts_writing": ${True if start_date == "writing" else False}
       - "starts_physician": ${ True if start_date == "physician" else False}
@@ -934,11 +934,11 @@ attachment:
       - "duty_end_date": ${ specific_end_date if end_date == "active duty" else ""}
       - "ends_other": ${misc_end_option_checkbox}
       - "other_ending": ${misc_end_option_text}
-      - "witness_1_name": ${witnesses[0].name.full(middle='full') if first_witness_known else ""}
+      - "witness_1_name": ${witnesses[0].name_full() if first_witness_known else ""}
       - "witness_1_address": ${ witnesses[0].address.on_one_line(bare=True) if first_witness_known else ""}
-      - "witness_2_name": ${witnesses[1].name.full(middle='full') if second_witness_known else ""}
+      - "witness_2_name": ${witnesses[1].name_full() if second_witness_known else ""}
       - "witness_2_address": ${ witnesses[1].address.on_one_line(bare=True) if second_witness_known else ""}
-      - "other_parent_name": ${other_parent.name.full(middle='full') if include_other_parent_info == True else ""}
+      - "other_parent_name": ${other_parent.name_full() if include_other_parent_info == True else ""}
       - "other_parent_address": |
           % if parent_address_type == "mail":
           ${other_parent.address.on_one_line(bare=True)}
@@ -1004,7 +1004,7 @@ review:
   - Edit: users[0].name.first
     button: |
       **Your name:**
-      ${users[0].name.full(middle='full')}
+      ${users[0].name_full()}
   - Edit: address_type
     button: |
       **Your address:**
@@ -1020,11 +1020,11 @@ review:
   - Edit: other_parent.name.first
     button: |
       **Other ${parent_or_guardian}'s name:**
-      ${other_parent.name.full(middle='full')}
+      ${other_parent.name_full()}
     show if: include_other_parent_info
   - Edit: parent_address_type
     button: |
-      **${other_parent.name.full(middle='full')}'s address:**
+      **${other_parent.name_full()}'s address:**
       % if parent_address_type == "unhoused":
       They are unhoused.
       % else:
@@ -1038,12 +1038,12 @@ review:
   - Edit: child.name.first
     button: |
       **Child's name:**
-      ${child.name.full(middle='full')}
+      ${child.name_full()}
     show if: born_yet
   - Edit: child.birth_date
     button: |
       % if born_yet == True:
-      **${child.name.full(middle='full')}'s date of birth:**
+      **${child.name_full()}'s date of birth:**
       % else:
       **Expected date of birth:**
       % endif
@@ -1055,7 +1055,7 @@ review:
         - child.county
     button: |
       % if born_yet == True:
-      **${child.name.full(middle='full')}'s county of residence:**
+      **${child.name_full()}'s county of residence:**
       % else:
       **Expected county of residence:**
       % endif
@@ -1063,10 +1063,10 @@ review:
   - Edit: guardian.name.first
     button: |
      **Short-term guardian's name:**
-     ${guardian.name.full(middle='full')}
+     ${guardian.name_full()}
   - Edit: guardian.address.address
     button: |
-      **${guardian.name.full(middle='full')}'s address:**
+      **${guardian.name_full()}'s address:**
       ${guardian.address.on_one_line(bare=True)}
   - Edit: start_date
     button: |
@@ -1117,11 +1117,11 @@ review:
   - Edit: witnesses[0].name.first
     button: |
       **First witness:**
-      ${witnesses[0].name.full(middle='full')}
+      ${witnesses[0].name_full()}
     show if: first_witness_known
   - Edit: witnesses[0].address.address
     button: |
-      **${witnesses[0].name.full(middle='full')}'s address:**
+      **${witnesses[0].name_full()}'s address:**
       ${witnesses[0].address.on_one_line(bare=True)}
     show if: first_witness_known
   - Edit: second_witness_known
@@ -1131,11 +1131,11 @@ review:
   - Edit: witnesses[1].name.first
     button: |
       **Second witness:**
-      ${witnesses[0].name.full(middle='full')}
+      ${witnesses[0].name_full()}
     show if: second_witness_known
   - Edit: witnesses[1].address.address
     button: |
-      **${witnesses[1].name.full(middle='full')}'s address:**
+      **${witnesses[1].name_full()}'s address:**
       ${witnesses[1].address.on_one_line(bare=True)}
     show if: second_witness_known
 ---
@@ -1154,7 +1154,7 @@ review:
   - Edit: users[0].name.first
     button: |
       **Your name:**
-      ${users[0].name.full(middle='full')}
+      ${users[0].name_full()}
   - Edit: address_type
     button: |
       **Your address:**
@@ -1170,11 +1170,11 @@ review:
   - Edit: other_parent.name.first
     button: |
       **Other ${parent_or_guardian}'s name:**
-      ${other_parent.name.full(middle='full')}
+      ${other_parent.name_full()}
     show if: include_other_parent_info
   - Edit: parent_address_type
     button: |
-      **${other_parent.name.full(middle='full')}'s address:**
+      **${other_parent.name_full()}'s address:**
       % if parent_address_type == "unhoused":
       They are unhoused.
       % else:
@@ -1197,12 +1197,12 @@ review:
   - Edit: child.name.first
     button: |
       **Child's name:**
-      ${child.name.full(middle='full')}
+      ${child.name_full()}
     show if: born_yet
   - Edit: child.birth_date
     button: |
       % if born_yet == True:
-      **${child.name.full(middle='full')}'s date of birth:**
+      **${child.name_full()}'s date of birth:**
       % else:
       **Expected date of birth:**
       % endif
@@ -1214,7 +1214,7 @@ review:
         - child.county
     button: |
       % if born_yet == True:
-      **${child.name.full(middle='full')}'s county of residence:**
+      **${child.name_full()}'s county of residence:**
       % else:
       **Expected county of residence:**
       % endif
@@ -1231,10 +1231,10 @@ review:
   - Edit: guardian.name.first
     button: |
      **Short-term guardian's name:**
-     ${guardian.name.full(middle='full')}
+     ${guardian.name_full()}
   - Edit: guardian.address.address
     button: |
-      **${guardian.name.full(middle='full')}'s address:**
+      **${guardian.name_full()}'s address:**
       ${guardian.address.on_one_line(bare=True)}
   - Edit: start_date
     button: |
@@ -1294,11 +1294,11 @@ review:
   - Edit: witnesses[0].name.first
     button: |
       **First witness:**
-      ${witnesses[0].name.full(middle='full')}
+      ${witnesses[0].name_full()}
     show if: first_witness_known
   - Edit: witnesses[0].address.address
     button: |
-      **${witnesses[0].name.full(middle='full')}'s address:**
+      **${witnesses[0].name_full()}'s address:**
       ${witnesses[0].address.on_one_line(bare=True)}
     show if: first_witness_known
   - Edit: second_witness_known
@@ -1308,10 +1308,10 @@ review:
   - Edit: witnesses[1].name.first
     button: |
       **Second witness:**
-      ${witnesses[0].name.full(middle='full')}
+      ${witnesses[0].name_full()}
     show if: first_witness_known == True and second_witness_known == True
   - Edit: witnesses[1].address.address
     button: |
-      **${witnesses[1].name.full(middle='full')}'s address:**
+      **${witnesses[1].name_full()}'s address:**
       ${witnesses[1].address.on_one_line(bare=True)}
     show if: first_witness_known == True and second_witness_known == True
