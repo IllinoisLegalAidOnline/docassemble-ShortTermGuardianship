@@ -1,7 +1,7 @@
 metadata:
   title: Short-term guardianship
   short title: Short-term guardianship
-  comment:  This program helps you prepare a form to appoint a short-term guardian to be responsible a child for up to 1 year.
+  comment:  This Easy Form helps you prepare a form to appoint a short-term guardian to be responsible a child for up to 1 year.
   authors:
     - Vivian McNaughton
     - Matt Newsted
@@ -18,7 +18,6 @@ objects:
   - child: ALIndividual
   - guardian: ALIndividual
   - witnesses: ALPeopleList.using(there_are_any=True)
-  - court_list: ALCourtLoader.using(file_name='docassemble.ILAO:data/sources/il_courts.xlsx')
   - other_parent_mail: ALAddress
 ---
 sections:
@@ -77,7 +76,6 @@ code: |
   if born_yet == True:
     if time_difference_check. years > 18:
       adult_child_kickout
-  #child.county
   
   set_progress(60)
   nav.set_section('section_guardianship')
@@ -189,7 +187,7 @@ subquestion: |
   
   You can create a short-term guardianship for a child that is not born yet.
   
-  To learn more, read ILAO's article about [**getting guardianship of a child**](https://www.illinoislegalaid.org/legal-information/getting-guardianship-child-0).
+  To learn more, see ILAO's article on [**plenary guardianship of a child**](https://www.illinoislegalaid.org/node/30531).
 ---
 template: passport_etc
 subject: |
@@ -199,7 +197,7 @@ content: |
   
   Use [**Get Legal Help**](https://www.illinoislegalaid.org/get-legal-help) to find free or low-cost legal services in your area. 
   
-  If you live in Cook County, you may also call the [**Guardianship Assistance Desk for Minors**](https://www.cookcountycourt.org/division/probate-division/minor-guardianship) at 312-603-0135.
+  If you live in Cook County, you may also call the [**Guardianship Assistance Desk for Minors**](https://www.cookcountycourt.org/division/probate-division/minor-guardianship) at <a href="tel:+13126030135">**312-603-0135**</a>.
 ---
 id: parent or guardian
 question: |
@@ -238,7 +236,7 @@ question: |
 subquestion: |
   If the child already has a court-ordered or plenary guardian, you do not have the authority to appoint a short-term guardian. You may want to ask the child's plenary guardian to complete this program.
   
-  If the child is in your care, you may want to file a petition to discharge the guardianship. You can use ILAO's [**Minor guardianship discharge Easy Form**](https://www.illinoislegalaid.org/legal-information/minor-guardianship-discharge) to make a *Petition to Discharge Guardianship of a Minor*.
+  If the child is in your care, you may want to file a petition to discharge the guardianship. You can use ILAO's [**Minor guardianship discharge Easy Form**](https://www.illinoislegalaid.org/node/30891) to make a *Petition to Discharge Guardianship of a Minor*.
   
   Click **Back** if you made a mistake. Or you can talk with a lawyer to discuss your options. Use **[Get Legal Help](https://www.illinoislegalaid.org/get-legal-help)** to find free or low-cost legal services in your area.
 buttons:
@@ -300,7 +298,7 @@ content: |
 
   A short-term guardianship cannot be used to avoid the custody rights of another parent. Use this program only if you have custody, guardianship, or authority over the child. 
   
-  Do not contact the other parent if doing so would be dangerous. If you need protection from the other parent, you may want to ask a court for an Order of Protection. You can use ILAO's [**Order of protection Easy Form**](https://www.illinoislegalaid.org/legal-information/order-protection) to ask for an Order of Protection.
+  Do not contact the other parent if doing so would be dangerous. If you need protection from the other parent, you may want to ask a court for an Order of Protection. You can use ILAO's [**Order of protection Easy Form**](https://www.illinoislegalaid.org/node/30686) to ask for an Order of Protection.
   % else:
   To create a short-term guardianship, all of the child's guardians must agree to the short-term guardianship if they are able to. Any of the chld's plenary guardians are able to end a short-term guardianship. Their rights over the child take priority over that of the short-term guardian. 
 
@@ -308,7 +306,7 @@ content: |
   
   A short-term guardianship cannot be used to keep a child away from another guardian. Use this program only if you have custody, guardianship, or authority over the child.
   
-  Do not contact the other guardian if doing so would be dangerous. If you need protection from the other guardian, you may want to ask a court for an Order of Protection. You can use ILAO's [**Order of protection Easy Form**](https://www.illinoislegalaid.org/legal-information/order-protection) to ask for an Order of Protection.
+  Do not contact the other guardian if doing so would be dangerous. If you need protection from the other guardian, you may want to ask a court for an Order of Protection. You can use ILAO's [**Order of protection Easy Form**](https://www.illinoislegalaid.org/node/30686) to ask for an Order of Protection.
   % endif
 ---
 id: other parent name
@@ -368,10 +366,6 @@ fields:
     js show if: |
       val("parent_address_type") === "mail" || val("parent_address_type") === "live"
     required: False
-  - County: other_parent.address.county
-    js show if: |
-      val("parent_address_type") === "mail" || val("parent_address_type") === "live"
-    required: False
 ---
 #Do we need to add an option about child custody?
 id: why is consent unneeded
@@ -383,13 +377,13 @@ subquestion: |
 
   A short-term guardianship cannot be used to avoid the custody rights of another parent. Use this program only if you have custody or authority over the child. 
   
-   Do not contact the other parent if doing so would be dangerous. If you need protection from the other parent, you may want to ask a court for an Order of Protection. You can use ILAO's [**Order of protection Easy Form**](https://www.illinoislegalaid.org/legal-information/order-protection) to ask for an Order of Protection.
+   Do not contact the other parent if doing so would be dangerous. If you need protection from the other parent, you may want to ask a court for an Order of Protection. You can use ILAO's [**Order of protection Easy Form**](https://www.illinoislegalaid.org/node/30686) to ask for an Order of Protection.
   % else:
   To create a short-term guardianship, all of the child's guardians must agree to the short-term guardianship if they are able to. If the child has another guardian, that guardian is able to end a short-term guardianship. Their rights over the child take priority over that of the short-term guardian. 
 
   A short-term guardianship cannot be used to keep a child away from another guardian. Use this program only if you have custody, guardianship, or authority over the child.
   
-   Do not contact the other guardian if doing so would be dangerous. If you need protection from the other guardian, you may want to ask a court for an Order of Protection. You can use ILAO's [**Order of protection Easy Form**](https://www.illinoislegalaid.org/legal-information/order-protection) to ask for an Order of Protection.
+   Do not contact the other guardian if doing so would be dangerous. If you need protection from the other guardian, you may want to ask a court for an Order of Protection. You can use ILAO's [**Order of protection Easy Form**](https://www.illinoislegalaid.org/node/30686) to ask for an Order of Protection.
   % endif
 field: why_is_consent_unneeded 
 choices:
@@ -424,7 +418,7 @@ subquestion: |
   If the child's other ${parent_or_guardian} has custody, guardianship, or authority over the child, you need their consent in order to use this program.
   
   % if parent_or_guardian == "guardian":
-  If the child's other guardian is no longer serving as guardian, you may want to file a petition to discharge their guardianship. You can use ILAO's [**Minor guardianship discharge**](https://www.illinoislegalaid.org/legal-information/order-protection) to make a *Petition to Discharge Guardianship of a Minor*.
+  If the child's other guardian is no longer serving as guardian, you may want to file a petition to discharge their guardianship. You can use ILAO's [**Minor guardianship discharge Easy Form**](https://www.illinoislegalaid.org/node/30891) to make a *Petition to Discharge Guardianship of a Minor*.
   
   % endif
   Click **Back** if you made a mistake. Or you can talk with a lawyer to discuss your options. Use **[Get Legal Help](https://www.illinoislegalaid.org/get-legal-help)** to find free or low-cost legal services in your area.
@@ -562,36 +556,6 @@ subquestion: |
 buttons:
   - Exit: exit
   - Restart: restart
----
-#In the HotDocs version this question is asked regardless of whether the baby is born yet. Is that appropriate?
-id: filing county
-question: |
-  % if born_yet == True:  
-  Which county does ${child.name_full()} live in?
-  % else:
-  Which county will the child live in?
-  % endif
-subquestion: |
-  ${collapse_template(county_lookup_help)}
-fields:
-  - no label: child.trial_court_index
-    code: |
-      ilao_court_county_lookup(court_list)
-validation code: |
-  if child.trial_court_index == "-1":
-    trial_court = court_list.as_court('trial_court', 15)
-  else:
-    trial_court = court_list.as_court('trial_court', child.trial_court_index)
----
-template: county_lookup_help
-subject: |
-  **How do I look up the county?**
-content: |  
-  You can use this [**City-to-County Finder**](https://www.statsamerica.org/CityCountyFinder/) to find the county.
----
-code: |
-  child.trial_court_index
-  child.county = trial_court.address.county
 ---
 id: guardian name
 question: |
@@ -1048,18 +1012,6 @@ review:
       **Expected date of birth:**
       % endif
       ${child.birth_date}
-  - label: Edit
-    fields: 
-      - child.trial_court_index
-      - recompute:
-        - child.county
-    button: |
-      % if born_yet == True:
-      **${child.name_full()}'s county of residence:**
-      % else:
-      **Expected county of residence:**
-      % endif
-      ${end_in_county(child.county)}
   - Edit: guardian.name.first
     button: |
      **Short-term guardian's name:**
@@ -1207,18 +1159,6 @@ review:
       **Expected date of birth:**
       % endif
       ${child.birth_date}
-  - label: Edit
-    fields: 
-      - child.trial_court_index
-      - recompute:
-        - child.county
-    button: |
-      % if born_yet == True:
-      **${child.name_full()}'s county of residence:**
-      % else:
-      **Expected county of residence:**
-      % endif
-      ${end_in_county(child.county)}
 ---
 section: Guardianship info
 id: guardianship review screen
