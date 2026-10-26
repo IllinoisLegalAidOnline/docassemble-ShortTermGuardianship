@@ -229,6 +229,7 @@ fields:
   - no label: has_plenary_guardian
     datatype: yesnoradio
 ---
+#FLAG: Update Minor guardianship discharge Easy Form name if changed to End guardianship of a child.
 id: plenary guardian kickout
 event: plenary_guardian_kickout
 question: |
@@ -410,6 +411,7 @@ subquestion: |
   
   This means the other ${parent_or_guardian} would be able to end the short-term guardianship.
 ---
+#FLAG: Update Minor guardianship discharge Easy Form name if changed to End guardianship of a child.
 id: no consent kickout
 event: no_consent_kickout
 question: |
